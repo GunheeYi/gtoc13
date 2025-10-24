@@ -2,7 +2,6 @@ classdef Planet < CelestialBody
     properties
         name
         mu
-        flybyable
     end
     methods
         function planet = Planet(celestialBody_args, name, mu, flybyable)
