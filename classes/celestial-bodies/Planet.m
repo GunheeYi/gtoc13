@@ -4,8 +4,8 @@ classdef Planet < CelestialBody
         mu
     end
     methods
-        function planet = Planet(celestialBody_args, name, mu, flybyable)
-            planet@CelestialBody(celestialBody_args)
+        function planet = Planet(id, K0, weight, name, mu, flybyable)
+            planet@CelestialBody(id, K0, weight);
             planet.name = name;
             planet.mu = mu;
             planet.flybyable = flybyable;
