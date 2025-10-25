@@ -27,7 +27,7 @@ trajectory = trajectory.startByTargeting(planetX, t_start, vx_start);
 figure();
 hold on;
 
-plot_system();
+plot_system(trajectory.t_end);
 trajectory.draw();
 
 axis equal;

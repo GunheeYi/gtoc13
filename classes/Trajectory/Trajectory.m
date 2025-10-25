@@ -2,26 +2,38 @@ classdef Trajectory
     properties
         arcs (:,1) cell % each cell contains either a ConicArc, PropagatedArc or FlybyArc
     end
+    properties (Dependent)
+        t_end
+    end
     methods
         function trajectory = Trajectory()
         end
 
-        function trajectory = addArc(trajectory, arc)
+        function t_end = get.t_end(trajectory)
+            if isempty(trajectory.arcs)
+                error('Trajectory is empty; t_end is undefined.');
+            else
+                arc_last = trajectory.arcs{end};
+                t_end = arc_last.t_end;
+            end
+        end
+
+        function trajectory = addArc(trajectory, arc_new)
             arguments
                 trajectory Trajectory
-                arc {mustBeA(arc,["ConicArc","PropagatedArc","FlybyArc"])}
+                arc_new {mustBeA(arc_new,["ConicArc","PropagatedArc","FlybyArc"])}
             end
 
             if isempty(trajectory.arcs)
-                if ~isa(arc, "ConicArc") && ~isa(arc, "PropagatedArc")
+                if ~isa(arc_new, "ConicArc") && ~isa(arc_new, "PropagatedArc")
                     error('The first arc must be heliocentric.');
                 end
             else
-                lastArc = trajectory.arcs{end};
-                Trajectory_addArc_validateContinuity(lastArc, arc);
+                arc_last = trajectory.arcs{end};
+                Trajectory_addArc_validateContinuity(arc_last, arc_new);
             end
 
-            trajectory.arcs{end+1,1} = arc;
+            trajectory.arcs{end+1,1} = arc_new;
         end
 
         function trajectory = startByTargeting(trajectory, target, t_start, vx_start)
