@@ -18,10 +18,11 @@ function load_planets()
         id     = data{i, 1};
         name   = data{i, 2};
         mu     = data{i, 3};
-        K0     = data{i, 4:9};
-        weight = data{i, 10};
+        r      = data{i, 4};
+        K0     = cell2mat(data(i, 5:10)).';
+        weight = data{i, 11};
         flybyable = name ~= "Yandi";
-        planets(i, 1) = Planet(id, K0, weight, name, mu, flybyable);
+        planets(i, 1) = Planet(id, K0, weight, name, mu, r, flybyable);
     end
 end
 
@@ -35,7 +36,7 @@ function load_asteroids()
 
     for i = 1:n
         id     = data{i, 1};
-        K0     = data{i, 2:7};
+        K0     = cell2mat(data(i, 2:7)).';
         weight = data{i, 8};
         asteroids(i, 1) = Asteroid(id, K0, weight);
     end
@@ -51,7 +52,7 @@ function load_comets()
 
     for i = 1:n
         id     = data{i, 1};
-        K0     = data{i, 2:7};
+        K0     = cell2mat(data(i, 2:7)).';
         weight = data{i, 8};
         comets(i, 1) = Comet(id, K0, weight);
     end
