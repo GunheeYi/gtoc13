@@ -1,25 +1,25 @@
 classdef PropagatedArc
     properties
-        ts (1,:) {mustBeNonnegative}
-        Rs (3,:) {mustBeReal}
-        Vs (3,:) {mustBeReal}
-        Cs (3,:) {mustBeReal} % controls
+        ts (1,:) {mustBeNonnegative};
+        Rs (3,:) {mustBeReal};
+        Vs (3,:) {mustBeReal};
+        Cs (3,:) {mustBeReal}; % controls
     end
     properties (Dependent)
-        t_start
-        t_end
-        R_start
-        R_end
-        V_start
-        V_end
+        t_start;
+        t_end;
+        R_start;
+        R_end;
+        V_start;
+        V_end;
     end
     methods
         function propagatedArc = PropagatedArc(ts, Rs, Vs, Cs)
             arguments
-                ts (1,:) {mustBeNonnegative}
-                Rs (3,:) {mustBeReal}
-                Vs (3,:) {mustBeReal}
-                Cs (3,:) {mustBeReal}
+                ts (1,:) {mustBeNonnegative};
+                Rs (3,:) {mustBeReal};
+                Vs (3,:) {mustBeReal};
+                Cs (3,:) {mustBeReal};
             end
 
             n = length(ts);
@@ -76,11 +76,11 @@ classdef PropagatedArc
 
         function draw(propagatedArc, n_points, varargin)
             arguments
-                propagatedArc PropagatedArc %#ok<INUSA>
-                n_points (1,1) {mustBePositive} = 100 %#ok<INUSA>
+                propagatedArc PropagatedArc; %#ok<INUSA>
+                n_points {mustBePositive} = 100; %#ok<INUSA>
             end
             arguments (Repeating)
-                varargin
+                varargin;
             end
             % TODO: implement
             error('Not yet implemented.');

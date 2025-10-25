@@ -1,27 +1,26 @@
 classdef CelestialBody
     properties
-        id
-        K0 (6,1) {mustBeReal} % initial Keplerian orbital elements
-        weight {mustBeScalarOrEmpty mustBePositive} % for exploration
-        flybyable
+        id {mustBePositive, mustBeInteger};
+        K0 (6,1) {mustBeReal}; % initial Keplerian orbital elements
+        weight {mustBePositive}; % for exploration
+        flybyable logical = false;
     end
     methods
         function celestialBody = CelestialBody(id, K0, weight)
             arguments
-                id {mustBeScalarOrEmpty mustBePositive mustBeInteger}
-                K0 (6,1) {mustBeReal}
-                weight {mustBeScalarOrEmpty mustBePositive}
+                id {mustBePositive, mustBeInteger};
+                K0 (6,1) {mustBeReal};
+                weight {mustBePositive};
             end
             celestialBody.id = id;
             celestialBody.K0 = K0;
             celestialBody.weight = weight;
-            celestialBody.flybyable = false; % will be overwritten for planets
         end
 
         function K = K_at(celestialBody, t)
             arguments
-                celestialBody CelestialBody
-                t {mustBeScalarOrEmpty mustBeNonnegative}
+                celestialBody CelestialBody;
+                t {mustBeNonnegative};
             end
 
             global mu_altaira %#ok<GVMIS>
@@ -31,8 +30,8 @@ classdef CelestialBody
 
         function S = S_at(celestialBody, t)
             arguments
-                celestialBody CelestialBody
-                t {mustBeScalarOrEmpty mustBeNonnegative}
+                celestialBody CelestialBody;
+                t {mustBeNonnegative};
             end
 
             global mu_altaira; %#ok<GVMIS>
@@ -43,8 +42,8 @@ classdef CelestialBody
 
         function R = R_at(celestialBody, t)
             arguments
-                celestialBody CelestialBody
-                t {mustBeScalarOrEmpty mustBeNonnegative}
+                celestialBody CelestialBody;
+                t {mustBeNonnegative};
             end
 
             S = celestialBody.S_at(t);
@@ -53,8 +52,8 @@ classdef CelestialBody
 
         function V = V_at(celestialBody, t)
             arguments
-                celestialBody CelestialBody
-                t {mustBeScalarOrEmpty mustBeNonnegative}
+                celestialBody CelestialBody;
+                t {mustBeNonnegative};
             end
 
             S = celestialBody.S_at(t);
@@ -63,11 +62,11 @@ classdef CelestialBody
 
         function draw(celestialBody, t, drawingOptions_body, drawingOptions_tail, drawingOptions_orbit)
             arguments
-                celestialBody CelestialBody
-                t {mustBeScalarOrEmpty mustBeNonnegative}
-                drawingOptions_body cell = {}
-                drawingOptions_tail cell = {}
-                drawingOptions_orbit cell = {}
+                celestialBody CelestialBody;
+                t {mustBeNonnegative};
+                drawingOptions_body cell = {};
+                drawingOptions_tail cell = {};
+                drawingOptions_orbit cell = {};
             end
 
             global mu_altaira AU %#ok<GVMIS>
@@ -98,8 +97,8 @@ end
 
 function Ks = populate_K_with_Ms(K, Ms)
     arguments
-        K (6, 1) {mustBeReal}
-        Ms (1, :) {mustBeReal} % mean anomalies
+        K (6, 1) {mustBeReal};
+        Ms (1, :) {mustBeReal}; % mean anomalies
     end
 
     Ks = repmat(K, 1, length(Ms));

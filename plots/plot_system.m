@@ -1,6 +1,6 @@
 function plot_system(t)
     arguments
-        t (1,1) {mustBeNonnegative} = 0;
+        t {mustBeNonnegative} = 0;
     end
 
     plot_altaira();

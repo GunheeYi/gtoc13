@@ -16,12 +16,12 @@ function load_planets()
 
     for i = 1:n
         id     = data{i, 1};
-        name   = data{i, 2};
+        name   = string(data{i, 2});
         mu     = data{i, 3};
         r      = data{i, 4};
         K0     = cell2mat(data(i, 5:10)).';
         weight = data{i, 11};
-        flybyable = name ~= "Yandi";
+        flybyable = mu == 0;
         planets(i, 1) = Planet(id, K0, weight, name, mu, r, flybyable);
     end
 end

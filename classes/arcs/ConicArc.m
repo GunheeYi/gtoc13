@@ -1,25 +1,25 @@
 classdef ConicArc
     properties
-        t_start (1,1) {mustBeNonnegative}
-        R_start (3,1) {mustBeReal}
-        V_start (3,1) {mustBeReal}
-        t_end (1,1) {mustBeNonnegative}
+        t_start {mustBeNonnegative};
+        R_start (3,1) {mustBeReal};
+        V_start (3,1) {mustBeReal};
+        t_end {mustBeNonnegative};
     end
     properties (Dependent)
-        S_start (6,1) {mustBeReal}
-        K_start (6,1) {mustBeReal}
-        S_end (6,1) {mustBeReal}
-        K_end (6,1) {mustBeReal}
-        R_end (3,1) {mustBeReal}
-        V_end (3,1) {mustBeReal}
+        S_start (6,1) {mustBeReal};
+        K_start (6,1) {mustBeReal};
+        S_end (6,1) {mustBeReal};
+        K_end (6,1) {mustBeReal};
+        R_end (3,1) {mustBeReal};
+        V_end (3,1) {mustBeReal};
     end
     methods
         function conicArc = ConicArc(t_start, R_start, V_start, t_end)
             arguments
-                t_start (1,1) {mustBeNonnegative}
-                R_start (3,1) {mustBeReal}
-                V_start (3,1) {mustBeReal}
-                t_end (1,1) {mustBeNonnegative}
+                t_start {mustBeNonnegative};
+                R_start (3,1) {mustBeReal};
+                V_start (3,1) {mustBeReal};
+                t_end {mustBeNonnegative};
             end
 
             global t_max; %#ok<GVMIS>
@@ -68,11 +68,11 @@ classdef ConicArc
         % draw
         function draw(conicArc, n_points, varargin)
             arguments
-                conicArc (1,1) ConicArc
-                n_points (1,1) {mustBePositive} = 100
+                conicArc ConicArc;
+                n_points {mustBePositive} = 100;
             end
             arguments (Repeating)
-                varargin
+                varargin;
             end
 
             global mu_altaira AU; %#ok<GVMIS>

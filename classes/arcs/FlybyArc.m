@@ -1,9 +1,9 @@
 classdef FlybyArc
     properties
-        t {mustBeScalarOrEmpty mustBeNonnegative}
-        body CelestialBody
-        V_in (3,1) {mustBeReal}
-        V_out (3,1) {mustBeReal}
+        t {mustBeNonnegative};
+        body CelestialBody;
+        V_in (3,1) {mustBeReal};
+        V_out (3,1) {mustBeReal};
     end
     properties (Dependent)
         % TODO: implement setters & getters for dependent properties
@@ -21,10 +21,10 @@ classdef FlybyArc
     methods
         function flybyArc = FlybyArc(t, body, V_in, V_out)
             arguments
-                t {mustBeScalarOrEmpty mustBeNonnegative}
-                body CelestialBody
-                V_in (3,1) {mustBeReal}
-                V_out (3,1) {mustBeReal}
+                t {mustBeNonnegative};
+                body CelestialBody;
+                V_in (3,1) {mustBeReal};
+                V_out (3,1) {mustBeReal};
             end
 
             global t_max; %#ok<GVMIS>

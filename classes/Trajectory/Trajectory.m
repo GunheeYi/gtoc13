@@ -1,9 +1,9 @@
 classdef Trajectory
     properties
-        arcs (:,1) cell % each cell contains either a ConicArc, PropagatedArc or FlybyArc
+        arcs (:,1) cell; % each cell contains either a ConicArc, PropagatedArc or FlybyArc
     end
     properties (Dependent)
-        t_end
+        t_end;
     end
     methods
         function trajectory = Trajectory()
@@ -20,8 +20,8 @@ classdef Trajectory
 
         function trajectory = addArc(trajectory, arc_new)
             arguments
-                trajectory Trajectory
-                arc_new {mustBeA(arc_new,["ConicArc","PropagatedArc","FlybyArc"])}
+                trajectory Trajectory;
+                arc_new {mustBeA(arc_new,["ConicArc","PropagatedArc","FlybyArc"])};
             end
 
             if isempty(trajectory.arcs)
@@ -38,10 +38,10 @@ classdef Trajectory
 
         function trajectory = startByTargeting(trajectory, target, t_start, vx_start)
             arguments
-                trajectory Trajectory
-                target CelestialBody
-                t_start (1,1) {mustBeNonnegative}
-                vx_start (1,1) {mustBePositive}
+                trajectory Trajectory;
+                target CelestialBody;
+                t_start {mustBeNonnegative};
+                vx_start {mustBePositive};
             end
 
             global year_in_secs AU; %#ok<GVMIS>
@@ -89,8 +89,8 @@ classdef Trajectory
         
         function draw(trajectory, n_points_per_arc)
             arguments
-                trajectory Trajectory
-                n_points_per_arc (1,1) {mustBePositive} = 100
+                trajectory Trajectory;
+                n_points_per_arc {mustBePositive} = 100;
             end
 
             for i = 1:numel(trajectory.arcs)
