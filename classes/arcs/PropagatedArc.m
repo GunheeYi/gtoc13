@@ -73,5 +73,17 @@ classdef PropagatedArc
         function V_end = get.V_end(propagatedArc)
             V_end = propagatedArc.Vs(:,end);
         end
+
+        function draw(propagatedArc, n_points, varargin)
+            arguments
+                propagatedArc PropagatedArc %#ok<INUSA>
+                n_points (1,1) {mustBePositive} = 100 %#ok<INUSA>
+            end
+            arguments (Repeating)
+                varargin
+            end
+            % TODO: implement
+            error('Not yet implemented.');
+        end
     end
 end

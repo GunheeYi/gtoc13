@@ -1,18 +1,8 @@
 function plot_system(varargin)
-    figure();
-    hold on;
-
     plot_altaira();
     plot_planets();
     plot_asteroids();
     plot_comets();
-
-    axis equal;
-    grid on;
-    xlabel('x [AU]');
-    ylabel('y [AU]');
-    zlabel('z [AU]');
-    legend();
 end
 
 function plot_altaira()
