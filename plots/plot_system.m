@@ -14,11 +14,12 @@ function plot_altaira()
 end
 
 function plot_planets(t)
-    global planets; %#ok<GVMIS>
+    global planets year_in_secs; %#ok<GVMIS>
 
     for i = 1:numel(planets)
         planet = planets(i);
-        planet.draw(t, {'o', 'HandleVisibility', 'off'}, {}, {'-', 'DisplayName', planet.name});
+
+        planet.draw(t, {'o', 'HandleVisibility', 'off'}, {}, {'-', 'DisplayName', sprintf('%s (%.2gyrs)', planet.name, planet.T / year_in_secs)});
     end
 end
 
