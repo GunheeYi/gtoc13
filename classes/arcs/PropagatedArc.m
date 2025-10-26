@@ -1,5 +1,6 @@
 classdef PropagatedArc
     properties
+        n {mustBePositive mustBeInteger};
         ts (1,:) {mustBeNonnegative};
         Rs (3,:) {mustBeReal};
         Vs (3,:) {mustBeReal};
@@ -24,7 +25,7 @@ classdef PropagatedArc
                 target CelestialBody = CelestialBody.empty;
             end
 
-            n = length(ts);
+            propagatedArc.n = length(ts);
             if n < 2
                 error('At least two rows are required per arc.');
             end
@@ -87,6 +88,19 @@ classdef PropagatedArc
             end
             % TODO: implement
             error('Not yet implemented.');
+        end
+
+        function solutionRows = to_solutionRows(propagatedArc)
+            solutionRows = SolutionRow.empty;
+
+            for i=1:propagatedArc.n
+                solutionRow_i = SolutionRow( ...
+                    0, 1, propagatedArc.ts(i), ...
+                    propagatedArc.Rs(:,i), propagatedArc.Vs(:,i), ...
+                    propagatedArc.Cs(:,i) ...
+                );
+                solutionRows(i,1) = solutionRow_i;
+            end
         end
     end
 end

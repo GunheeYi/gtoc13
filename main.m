@@ -47,8 +47,12 @@ grid on;
 xlabel('x [AU]');
 ylabel('y [AU]');
 zlabel('z [AU]');
-range_limit = [-10 10]; % in AUs
+range_limit = [-20 20]; % in AUs
 xlim(range_limit);
 ylim(range_limit);
 zlim(range_limit);
 legend();
+
+%% save solution
+
+trajectory.exportAsSolution('planetx-vulcan-bespin-beyonce.txt');

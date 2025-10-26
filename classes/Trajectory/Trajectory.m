@@ -122,5 +122,16 @@ classdef Trajectory
                 arc.draw(n_points_per_arc, '-');
             end
         end
+
+        function exportAsSolution(trajectory, filename)
+            arguments
+                trajectory Trajectory;
+                filename {mustBeTextScalar};
+            end
+
+            Trajectory_exportAsSolution(trajectory, filename);
+        end
+
+        % TODO: implement grading
     end
 end
