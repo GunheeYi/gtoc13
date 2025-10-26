@@ -5,6 +5,9 @@ classdef CelestialBody
         weight {mustBePositive}; % for exploration
         flybyable logical = false;
     end
+    properties (Dependent)
+        T; % orbital period 
+    end
     methods
         function celestialBody = CelestialBody(id, K0, weight)
             arguments
@@ -15,6 +18,13 @@ classdef CelestialBody
             celestialBody.id = id;
             celestialBody.K0 = K0;
             celestialBody.weight = weight;
+        end
+
+        function T = get.T(celestialBody)
+            global mu_altaira %#ok<GVMIS>
+
+            a = celestialBody.K0(1);
+            T = 2*pi*sqrt(a^3/mu_altaira);
         end
 
         function K = K_at(celestialBody, t)
