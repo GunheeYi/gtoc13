@@ -4,6 +4,7 @@ classdef ConicArc
         R_start (3,1) {mustBeReal};
         V_start (3,1) {mustBeReal};
         t_end {mustBeNonnegative};
+        target CelestialBody;
     end
     properties (Dependent)
         S_start (6,1) {mustBeReal};
@@ -14,12 +15,13 @@ classdef ConicArc
         V_end (3,1) {mustBeReal};
     end
     methods
-        function conicArc = ConicArc(t_start, R_start, V_start, t_end)
+        function conicArc = ConicArc(t_start, R_start, V_start, t_end, target)
             arguments
                 t_start {mustBeNonnegative};
                 R_start (3,1) {mustBeReal};
                 V_start (3,1) {mustBeReal};
                 t_end {mustBeNonnegative};
+                target CelestialBody = CelestialBody.empty;
             end
 
             global t_max; %#ok<GVMIS>
@@ -36,6 +38,7 @@ classdef ConicArc
             conicArc.R_start = R_start;
             conicArc.V_start = V_start;
             conicArc.t_end = t_end;
+            conicArc.target = target;
         end
 
         % state at start
@@ -82,13 +85,18 @@ classdef ConicArc
             if M_end < M_start
                 M_end = M_end + 2*pi;
             end
+
+            % TODO: draw more frequently for steep arcs (near altaira)
             Ms = linspace(M_start, M_end, n_points);
 
             Ks = repmat(conicArc.K_start, 1, n_points);
             Ks(6, :) = Ms;
             Ss = K2S(Ks, mu_altaira);
             Rs = Ss(1:3, :);
-            plot3mat(Rs / AU, varargin{:});
+            plot3mat( ...
+                Rs / AU, varargin{:}, ...
+                'DisplayName', sprintf('conic arc to %s', conicArc.target.name) ...
+            );
         end
     end
 end

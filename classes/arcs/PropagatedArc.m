@@ -4,6 +4,7 @@ classdef PropagatedArc
         Rs (3,:) {mustBeReal};
         Vs (3,:) {mustBeReal};
         Cs (3,:) {mustBeReal}; % controls
+        target CelestialBody;
     end
     properties (Dependent)
         t_start;
@@ -14,12 +15,13 @@ classdef PropagatedArc
         V_end;
     end
     methods
-        function propagatedArc = PropagatedArc(ts, Rs, Vs, Cs)
+        function propagatedArc = PropagatedArc(ts, Rs, Vs, Cs, target)
             arguments
                 ts (1,:) {mustBeNonnegative};
                 Rs (3,:) {mustBeReal};
                 Vs (3,:) {mustBeReal};
                 Cs (3,:) {mustBeReal};
+                target CelestialBody = CelestialBody.empty;
             end
 
             n = length(ts);
@@ -51,6 +53,7 @@ classdef PropagatedArc
             propagatedArc.Rs = Rs;
             propagatedArc.Vs = Vs;
             propagatedArc.Cs = Cs;
+            propagatedArc.target = target;
         end
 
         function t_start = get.t_start(propagatedArc)
