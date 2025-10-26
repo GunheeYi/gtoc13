@@ -18,7 +18,7 @@ function plot_planets(t)
 
     for i = 1:numel(planets)
         planet = planets(i);
-        planet.draw(t, {'o', 'DisplayName', planet.name}, {}, {'-', 'HandleVisibility', 'off'});
+        planet.draw(t, {'o', 'HandleVisibility', 'off'}, {}, {'-', 'DisplayName', planet.name});
     end
 end
 
