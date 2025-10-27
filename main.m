@@ -47,7 +47,7 @@ grid on;
 xlabel('x [AU]');
 ylabel('y [AU]');
 zlabel('z [AU]');
-range_limit = [-20 20]; % in AUs
+range_limit = [-200 200]; % in AUs
 xlim(range_limit);
 ylim(range_limit);
 zlim(range_limit);

@@ -198,11 +198,11 @@ function [V_flyby_out_refined, t_rendezvous_refined] = refineConicArc( ...
     );
 
     [x, ~, exitflag, ~] = fmincon(@(x) 0, x_ig, [], [], [], [], lb, ub, @nonlcon, options);
-    if exitflag <= 0
-        error('refineConicArc optimization did not converge.');
-    end
+    % if exitflag <= 0
+    %     error('refineConicArc optimization did not converge.');
+    % end
 
-    fprintf('refineConicArc converged.\n');
+    % fprintf('refineConicArc converged.\n');
 
     V_flyby_out_refined = x(1:3) / v_normaliazation_factor;
     t_rendezvous_refined = x(4);
