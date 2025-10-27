@@ -3,7 +3,6 @@ close all; clear; clc;
 format longg;
 % format compact
 
-addpath(genpath('../mercury'));
 addpath(genpath('basics'));
 addpath(genpath('dynamics'));
 addpath(genpath('classes'));
