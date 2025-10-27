@@ -77,10 +77,14 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target)
         fprintf('Feasible flyby maneuver found: turn angle = %.6f deg\n', rad2deg(turn_angle));
     end
 
+    [V_flyby_out_refined, t_rendezvous_refined] = refineConicArc( ...
+        t_flyby, R_flyby, V_flyby_body, V_flyby_out, target, t_rendezvous ...
+    );
+
     % 3. add flyby arc and post-flyby conic arc to trajectory
-    flybyArc = FlybyArc(t_flyby, body_flyby, V_flyby_in, V_flyby_out);
+    flybyArc = FlybyArc(t_flyby, body_flyby, V_flyby_in, V_flyby_out_refined);
     trajectory = trajectory.addArc(flybyArc);
-    conicArc = ConicArc(t_flyby, R_flyby, V_flyby_out, t_rendezvous, target);
+    conicArc = ConicArc(t_flyby, R_flyby, V_flyby_out_refined, t_rendezvous_refined, target);
     trajectory = trajectory.addArc(conicArc);
 end
 
@@ -147,4 +151,59 @@ function dvinf = calc_dvinf(arc_last, t_rendezvous, target)
     %     t_rendezvous / (365.25*86400), vinf_in, vinf_out);
 
     dvinf = vinf_out - vinf_in;
+end
+
+function [V_flyby_out_refined, t_rendezvous_refined] = refineConicArc( ...
+        t_flyby, R_flyby, V_flyby_body, V_flyby_out, target, t_rendezvous ...
+    )
+
+    Vinf = V_flyby_out - V_flyby_body;
+    vinf = norm(Vinf);
+
+    v_normaliazation_factor = t_rendezvous / vinf; % to help optimization convergence
+
+    dt_max = 1;
+    dv_max = dt_max / v_normaliazation_factor;
+
+    x_ig = [V_flyby_out * v_normaliazation_factor; t_rendezvous]; % initial guess
+    lb = [(V_flyby_out - dv_max) * v_normaliazation_factor; t_rendezvous - dt_max];
+    ub = [(V_flyby_out + dv_max) * v_normaliazation_factor; t_rendezvous + dt_max];
+    
+    function [c, ceq] = nonlcon(x_curr)
+        V_flyby_out_curr = x_curr(1:3) / v_normaliazation_factor;
+        t_rendezvous_curr = x_curr(4);
+
+        conicArc = ConicArc(t_flyby, R_flyby, V_flyby_out_curr, t_rendezvous_curr);
+        R_sc = conicArc.R_end;
+        R_target = target.R_at(t_rendezvous_curr);
+
+        ceq_vinf = (norm(V_flyby_out_curr - V_flyby_body) - vinf);
+        ceq_pos = R_sc - R_target;
+
+        fprintf('refineConicArc: t_rendezvous = %.8f years, dvinf = %.6f km/s, pos_err = [%.6f, %.6f, %.6f] km\n', ...
+            t_rendezvous_curr / (365.25*86400), ceq_vinf, ceq_pos(1), ceq_pos(2), ceq_pos(3) ...
+        );
+
+        c = [];
+        ceq = [ceq_vinf*1e6; ceq_pos];
+    end
+
+    options = optimoptions('fmincon', ...
+        Algorithm="interior-point", ...
+        EnableFeasibilityMode=true, ...
+        SubproblemAlgorithm="cg", ...
+        Display = 'iter-detailed', ...
+        StepTolerance = 1e-20, ...
+        ConstraintTolerance = 0.5e-1 ...
+    );
+
+    [x, ~, exitflag, ~] = fmincon(@(x) 0, x_ig, [], [], [], [], lb, ub, @nonlcon, options);
+    if exitflag <= 0
+        error('refineConicArc optimization did not converge.');
+    end
+
+    fprintf('refineConicArc converged.\n');
+
+    V_flyby_out_refined = x(1:3) / v_normaliazation_factor;
+    t_rendezvous_refined = x(4);
 end
