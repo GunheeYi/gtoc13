@@ -4,7 +4,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target)
         target CelestialBody;
     end
 
-    global day_in_secs t_max tol_t tol_v; %#ok<GVMIS>
+    global day_in_secs t_max tol_t tol_v; %#ok<GVMIS,NUSED>
 
     if isa(trajectory.arc_last, "FlybyArc")
         error('Consecutive flyby arcs are not allowed.');
@@ -16,7 +16,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target)
 
     options = optimset( ...
         'Display', 'iter', ...
-        'TolFun', 1e-3*tol_v, 'TolX', 1e-3*tol_t, ...
+        ... % 'TolFun', 1e-3*tol_v, 'TolX', 1e-3*tol_t, ...
         'MaxFunEvals', 500, 'MaxIter', 100 ...
     );
 
@@ -28,11 +28,10 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target)
         end
 
         try
-            t_rendezvous = fzero( ...
+            [t_rendezvous, ~, exitflag, ~] = fzero( ...
                 @(t_rendezvous) calc_dvinf(trajectory.arc_last, t_rendezvous, target), ...
                 t_rendezvous_ig, options ...
             );
-            break; % success
         catch ME
             if strcmp(ME.identifier, 'Trajectory_flybyTargeting:TimeDecreasing')
                 fprintf( ...
@@ -42,10 +41,21 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target)
                 );
                 dt_rendezvous_ig = dt_rendezvous_ig * 1.5;
                 t_rendezvous_ig = trajectory.t_end + dt_rendezvous_ig;
+                continue;
             else
                 rethrow(ME);
             end
         end
+
+        if exitflag <= 0
+            error('Trajectory.startByTargeting optimization did not converge.');
+        end
+
+        dvinf_final = calc_dvinf(trajectory.arc_last, t_rendezvous, target);
+        fprintf('Converged: t_rendezvous = %.8f years, dvinf = %.6f km/s\n', ...
+            t_rendezvous / (365.25*86400), dvinf_final);
+
+        break; % success
     end
 
     t_flyby = trajectory.arc_last.t_end;
@@ -138,47 +148,3 @@ function dvinf = calc_dvinf(arc_last, t_rendezvous, target)
 
     dvinf = vinf_out - vinf_in;
 end
-
-% function [c, ceq] = nonlcon(arc_last, t_rendezvous, target)
-%     arguments
-%         arc_last {mustBeA(arc_last,["ConicArc","PropagatedArc"])};
-%         t_rendezvous {mustBeNonnegative};
-%         target CelestialBody;
-%     end
-
-%     global mu_altaira year_in_secs; %#ok<GVMIS>
-
-%     fprintf('Evaluating nonlcon at t_rendezvous = %.8f years...\n', t_rendezvous / year_in_secs);
-
-%     t_flyby = arc_last.t_end;
-%     dt = t_rendezvous - t_flyby;
-
-%     body_flyby = arc_last.target;
-
-%     V_body_flyby = body_flyby.V_at(t_flyby);
-%     V_flyby_in = arc_last.V_end;
-
-%     R_flyby = body_flyby.R_at(t_flyby);
-%     R_rendezvous = target.R_at(t_rendezvous);
-%     [V_flyby_out, ~] = solve_lamberts_problem(R_flyby, R_rendezvous, dt, mu_altaira, 'Prograde');
-
-%     Vinf_in = V_flyby_in - V_body_flyby;
-%     Vinf_out = V_flyby_out - V_body_flyby;
-%     vinf_in = norm(Vinf_in);
-%     vinf_out = norm(Vinf_out);
-
-%     turn_angle = acos( dot(normed(Vinf_in), normed(Vinf_out)) );
-%     [turn_angle_min, turn_angle_max] = body_flyby.calc_feasible_turn_angle_range(vinf_in);
-
-%     fprintf('Feasible turn angle range: [%f deg, %f deg]\n', rad2deg(turn_angle_min), rad2deg(turn_angle_max));
-%     fprintf('Calculated turn angle: %f deg\n', rad2deg(turn_angle));
-
-%     fprintf('Vinf_in norm: %f km/s\n', vinf_in);
-%     fprintf('Vinf_out norm: %f km/s\n', vinf_out);
-
-%     c = [
-%         turn_angle - turn_angle_max;
-%         turn_angle_min - turn_angle
-%     ];
-%     ceq = vinf_out - vinf_in;
-% end
