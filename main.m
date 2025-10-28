@@ -22,35 +22,28 @@ global ...
 
 trajectory = Trajectory();
 t_start = 0;
-vx_start = 20;
+vx_start = 6;
 trajectory = trajectory.startByTargeting(planetX, t_start, vx_start);
-trajectory = trajectory.flybyTargeting(vulcan);
-trajectory = trajectory.flybyTargeting(bespin);
-trajectory = trajectory.flybyTargeting(beyonce);
-% trajectory = trajectory.flybyTargeting(hoth);
-% If hoth is included, position discontinuity error occurs.
-% same for yavin, wakonyingo. Why??
-% Lack in precision during solving Lambert's problem?
+trajectory = trajectory.flybyTargeting(rogue1, 100*year_in_secs);
+trajectory = trajectory.flybyTargeting(wakonyingo, 0);
+trajectory = trajectory.flybyTargeting(beyonce, 0);
+trajectory = trajectory.flybyTargeting(bespin, 0);
+trajectory = trajectory.flybyTargeting(beyonce, 0);
+trajectory = trajectory.flybyTargeting(hoth, 0);
+trajectory = trajectory.flybyTargeting(beyonce, 0);
+trajectory = trajectory.flybyTargeting(hoth, 0);
+trajectory = trajectory.flybyTargeting(beyonce, 0);
+% trajectory = trajectory.flybyTargeting(jotunn, 0);
+% trajectory = trajectory.flybyTargeting(yandi, 0);
+trajectory = trajectory.flybyTargeting(hoth, 0);
+trajectory = trajectory.flybyTargeting(eden, 0);
+trajectory = trajectory.flybyTargeting(yavin, 0);
+trajectory = trajectory.flybyTargeting(vulcan, 0);
+
+
 
 %% plot results
-
-figure();
-hold on;
-
-% plot_system(0 * year_in_secs);
-plot_system(trajectory.t_end);
 trajectory.draw(10000);
-
-axis equal;
-grid on;
-xlabel('x [AU]');
-ylabel('y [AU]');
-zlabel('z [AU]');
-range_limit = [-200 200]; % in AUs
-xlim(range_limit);
-ylim(range_limit);
-zlim(range_limit);
-legend();
 
 %% save solution
 

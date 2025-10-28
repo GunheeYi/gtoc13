@@ -1,4 +1,5 @@
-function trajectory = Trajectory_flybyTargeting(trajectory, target)
+% reverse shooting method by Gunhee (failed to converge within tolerance)
+function trajectory = Trajectory_flybyTargeting_shooting(trajectory, target)
     arguments
         trajectory Trajectory;
         target CelestialBody;

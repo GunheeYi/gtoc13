@@ -1,13 +1,14 @@
 function set_constants()
     global ...
-        AU ...
         mu_altaira ...
+        AU TU ...
         day_in_secs year_in_secs t_max...
         tol_t tol_r tol_v; %#ok<GVMIS>
 
-    AU = 149597870.691;
-
     mu_altaira = 139348062043.343;
+
+    AU = 149597870.691;
+    TU = sqrt(AU^3 / mu_altaira);
 
     day_in_secs = 86400; % in seconds
     year_in_secs = 365.25 * day_in_secs;

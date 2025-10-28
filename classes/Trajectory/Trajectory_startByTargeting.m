@@ -12,9 +12,9 @@ function trajectory = Trajectory_startByTargeting(trajectory, target, t_start, v
         error('startByTargeting can only be called on an empty trajectory.');
     end
 
-    t_rendezvous = 6 * year_in_secs;
-    ry_start = 10 * AU;
-    rz_start = 5 * AU;
+    t_rendezvous = 15 * year_in_secs;
+    ry_start = 5 * AU;
+    rz_start = -30 * AU;
     % note: When rx/rz_start are too small(about 1~2AU), 
     % optimization may fail to converge.
     % Don't know exactly why. 

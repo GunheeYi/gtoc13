@@ -37,8 +37,9 @@ classdef Trajectory
             trajectory = Trajectory_startByTargeting(trajectory, target, t_start, vx_start);
         end
         
-        function trajectory = flybyTargeting(trajectory, target)
-            trajectory = Trajectory_flybyTargeting(trajectory, target);
+        function trajectory = flybyTargeting(trajectory, target, dt_max)
+            % trajectory = Trajectory_flybyTargeting_shooting(trajectory, target);
+            trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_max);
         end
 
         function draw(trajectory, n_points_per_arc)

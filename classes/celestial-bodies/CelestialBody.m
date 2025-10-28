@@ -96,7 +96,7 @@ classdef CelestialBody
             end
 
             if ~isempty(drawingOptions_orbit)
-                Ms = linspace(0, 360, 60); % mean anomalies
+                Ms = linspace(0, 360, 3600); % mean anomalies
                 Ks = populate_K_with_Ms(celestialBody.K0, Ms);
                 Ss = K2S(Ks, mu_altaira);
                 plot3mat(Ss(1:3, :) / AU, drawingOptions_orbit{:});
