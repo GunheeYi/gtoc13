@@ -93,11 +93,13 @@ function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_max)
         'MaxFunctionEvaluations',1e10, ...
         'ScaleProblem','jacobian');
     
-    rng(1); % for reproducibility
+    % uncomment below for reproducibility of GA
+    % rng(1); 
     x_ig = ga(@calc_weighted_sum_of_dR_and_dt, 3, [],[],[],[], lb, ub, [], ga_opts);
     [x, resnorm, ~, exitflag, ~] = lsqnonlin(@calc_dR, x_ig, lb, ub, opts_lsq);
     if exitflag <= 0 || resnorm > 1e-6
-        trajectory.draw(10000);
+        % uncomment below to visualize last valid trajectory
+        % trajectory.draw(10000);
         error('Flyby targeting optimization did not converge.');
     end
 
