@@ -6,6 +6,7 @@ format longg;
 addpath(genpath('basics'));
 addpath(genpath('dynamics'));
 addpath(genpath('classes'));
+addpath(genpath('search'));
 addpath(genpath('plots'));
 addpath(genpath('main-blocks'));
 
@@ -24,27 +25,15 @@ trajectory = Trajectory();
 t_start = 0;
 vx_start = 6;
 trajectory = trajectory.startByTargeting(planetX, t_start, vx_start);
-trajectory = trajectory.flybyTargeting(rogue1, 100*year_in_secs);
-trajectory = trajectory.flybyTargeting(wakonyingo, 0);
-trajectory = trajectory.flybyTargeting(beyonce, 0);
-trajectory = trajectory.flybyTargeting(bespin, 0);
-trajectory = trajectory.flybyTargeting(beyonce, 0);
-trajectory = trajectory.flybyTargeting(hoth, 0);
-trajectory = trajectory.flybyTargeting(beyonce, 0);
-trajectory = trajectory.flybyTargeting(hoth, 0);
-trajectory = trajectory.flybyTargeting(beyonce, 0);
-% trajectory = trajectory.flybyTargeting(jotunn, 0);
-% trajectory = trajectory.flybyTargeting(yandi, 0);
-trajectory = trajectory.flybyTargeting(hoth, 0);
-trajectory = trajectory.flybyTargeting(eden, 0);
-trajectory = trajectory.flybyTargeting(yavin, 0);
-trajectory = trajectory.flybyTargeting(vulcan, 0);
-
-
+trajectory = trajectory.flybyTargeting(rogue1, 0, 100*year_in_secs);
+trajectory = trajectory.flybyTargeting(wakonyingo, 0, 0);
+trajectory = trajectory.flybyTargeting(bespin, 0, 0);
+trajectory = trajectory.flybyTargeting(wakonyingo, 0, 0);
+trajectory = trajectory.flybyTargeting(rogue1, 0, 0);
 
 %% plot results
 trajectory.draw(10000);
 
 %% save solution
 
-trajectory.exportAsSolution('planetx-vulcan-bespin-beyonce.txt');
+trajectory.exportAsSolution('trajectory.txt');

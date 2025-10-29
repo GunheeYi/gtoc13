@@ -1,12 +1,13 @@
 % method using `ga` and `lsqnonlin` by Jaewoo
 % refactored into the framework by Gunhee
-function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_max)
+function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max)
     arguments
         trajectory Trajectory;
         target CelestialBody;
+        dt_min {mustBeNonnegative};
         dt_max {mustBeNonnegative};
-        % maximum time after flyby to rendezvous with target [s]
-        % set to 0 for no limit
+        % min/maximum time after flyby to rendezvous with target [s]
+        % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
     end
 
     global AU TU year_in_secs t_max; %#ok<GVMIS,NUSED>
@@ -26,7 +27,7 @@ function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_max)
     Vinf_in_normed = normed(Vinf_in);
     Vinf_in_perp_normed = normed( cross( Vinf_in_normed, [0;0;1] ) );
 
-    dt_in_TU_lb = 1 / TU;
+    dt_in_TU_lb = max(dt_min, 1) / TU;
     if dt_max == 0
         dt_in_TU_ub = (t_max - t_flyby - 1) / TU;
     else
