@@ -1,3 +1,5 @@
+% method using `ga` and `lsqnonlin` by Jaewoo
+% refactored into the framework by Gunhee
 function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_max)
     arguments
         trajectory Trajectory;
