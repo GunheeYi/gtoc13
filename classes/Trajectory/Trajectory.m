@@ -6,6 +6,7 @@ classdef Trajectory
         arc_last;
         t_end;
         R_end;
+        n_flybys;
     end
     methods
         function trajectory = Trajectory()
@@ -27,6 +28,15 @@ classdef Trajectory
         end
         function R_end = get.R_end(trajectory)
             R_end = trajectory.arc_last.R_end;
+        end
+
+        function n_flybys = get.n_flybys(trajectory)
+            n_flybys = 0;
+            for i = 1:length(trajectory.arcs)
+                if isa(trajectory.arcs{i}, 'FlybyArc')
+                    n_flybys = n_flybys + 1;
+                end
+            end
         end
 
         function trajectory = addArc(trajectory, arc_new)
