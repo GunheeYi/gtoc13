@@ -66,9 +66,12 @@ classdef (Abstract) TransferArc
         end
     end
 
-    methods (Abstract, Access = protected)
-        K_end = get_K_end(transferArc)
+    methods (Abstract)
         draw(transferArc, n_points, varargin) % draw
         solutionRows = to_solutionRows(conicArc)
+    end
+
+    methods (Abstract, Access = protected)
+        K_end = get_K_end(transferArc)
     end
 end

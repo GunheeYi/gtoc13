@@ -8,7 +8,7 @@ function R_err = Trajectory_startByTargeting_calculatePositionError(target, t_st
 
     R_sc_start = [ -200*AU; ry_start; rz_start ];
     V_sc_start = [ vx_start; 0; 0 ];
-    conicArc = ConicArc(t_start, R_sc_start, V_sc_start, t_end);
+    conicArc = ConicArc(t_start, R_sc_start, V_sc_start, t_end, target);
 
     R_sc = conicArc.R_end;
     R_target = target.R_at(t_end);

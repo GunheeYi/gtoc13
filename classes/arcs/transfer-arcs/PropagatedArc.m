@@ -4,13 +4,6 @@ classdef PropagatedArc < TransferArc
             propagatedArc@TransferArc(t_start, R_start, V_start, t_end, target);
         end
 
-        % state at end
-        function K_end = get_K_end(conicArc)
-            global mu_altaira; %#ok<GVMIS>
-            % TODO: implement
-            error('Not yet implemented.');
-        end
-
         function draw(propagatedArc, n_points, varargin)
             arguments
                 propagatedArc PropagatedArc; %#ok<INUSA>
@@ -24,6 +17,13 @@ classdef PropagatedArc < TransferArc
         end
 
         function solutionRows = to_solutionRows(propagatedArc)
+            % TODO: implement
+            error('Not yet implemented.');
+        end
+    end
+    methods (Access = protected)
+        function K_end = get_K_end(conicArc)
+            global mu_altaira; %#ok<GVMIS>
             % TODO: implement
             error('Not yet implemented.');
         end

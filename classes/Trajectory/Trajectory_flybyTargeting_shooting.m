@@ -174,7 +174,7 @@ function [V_flyby_out_refined, t_rendezvous_refined] = refineConicArc( ...
         V_flyby_out_curr = x_curr(1:3) / v_normaliazation_factor;
         t_rendezvous_curr = x_curr(4);
 
-        conicArc = ConicArc(t_flyby, R_flyby, V_flyby_out_curr, t_rendezvous_curr);
+        conicArc = ConicArc(t_flyby, R_flyby, V_flyby_out_curr, t_rendezvous_curr, target);
         R_sc = conicArc.R_end;
         R_target = target.R_at(t_rendezvous_curr);
 

@@ -4,13 +4,6 @@ classdef ConicArc < TransferArc
             conicArc@TransferArc(t_start, R_start, V_start, t_end, target);
         end
 
-        % state at end
-        function K_end = get_K_end(conicArc)
-            global mu_altaira; %#ok<GVMIS>
-
-            K_end = KepMotion(conicArc.K_start, conicArc.t_end - conicArc.t_start, mu_altaira);
-        end
-
         % draw
         function draw(conicArc, n_points, varargin)
             arguments
@@ -54,6 +47,12 @@ classdef ConicArc < TransferArc
                 [0;0;0] ...
             );
             solutionRows = [solutionRow1; solutionRow2];
+        end
+    end
+    methods (Access = protected)
+        function K_end = get_K_end(conicArc)
+            global mu_altaira; %#ok<GVMIS>
+            K_end = KepMotion(conicArc.K_start, conicArc.t_end - conicArc.t_start, mu_altaira);
         end
     end
 end
