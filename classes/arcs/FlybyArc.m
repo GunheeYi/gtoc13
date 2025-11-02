@@ -6,11 +6,11 @@ classdef FlybyArc
         V_out (3,1) {mustBeReal};
     end
     properties (Dependent)
-        % TODO: implement setters & getters for dependent properties
         R
         V_body
         Vinf_in
         Vinf_out
+        vinf
         t_start
         t_end
         R_start
@@ -56,6 +56,10 @@ classdef FlybyArc
 
         function Vinf_out = get.Vinf_out(flybyArc)
             Vinf_out = flybyArc.V_out - flybyArc.V_body;
+        end
+
+        function vinf = get.vinf(flybyArc)
+            vinf = norm(flybyArc.Vinf_in);
         end
 
         function t_start = get.t_start(flybyArc)
