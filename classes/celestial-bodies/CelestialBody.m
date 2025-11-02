@@ -1,4 +1,4 @@
-classdef CelestialBody
+classdef (Abstract) CelestialBody
     properties
         id {mustBePositive, mustBeInteger};
         K0 (6,1) {mustBeReal}; % initial Keplerian orbital elements
