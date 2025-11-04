@@ -54,5 +54,9 @@ classdef ConicArc < TransferArc
             global mu_altaira; %#ok<GVMIS>
             K_end = KepMotion(conicArc.K_start, conicArc.t_end - conicArc.t_start, mu_altaira);
         end
+        function S_end = get_S_end(conicArc)
+            global mu_altaira; %#ok<GVMIS>
+            S_end = K2S(conicArc.K_end, mu_altaira);
+        end
     end
 end

@@ -1,6 +1,6 @@
 % method using `ga` and `lsqnonlin` by Jaewoo
 % refactored into the framework by Gunhee
-function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max)
     arguments
         trajectory Trajectory;
         target CelestialBody;
@@ -59,23 +59,20 @@ function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, d
         conicArc = ConicArc(t_flyby, R_flyby, V_sc_flyby_out, t_rendezvous, target);
     end
 
-    function dR = calc_dR(x)
+    function dR_res = calc_dR_res(x) % position residual
         conicArc = produce_conicArc(x);
-        t_rendezvous = conicArc.t_end;
-        R_sc_rendezvous = conicArc.R_end;
-        R_target_rendezvous = target.R_at(t_rendezvous);
-        dR = (R_sc_rendezvous - R_target_rendezvous) / AU;
+        dR_res = conicArc.dR_res;
     end
 
-    function J = calc_weighted_sum_of_dR_and_dt(x)
-        dR = calc_dR(x);
-        dr = norm(dR);
+    function J = calc_weighted_sum_of_dr_and_dt(x)
+        dR = calc_dR_res(x);
+        dr_in_AU = norm(dR) / AU;
         dt_in_TU = x(3);
 
         weight_r = 1;
         weight_t = 1e-3;
 
-        J = (weight_r * dr)^2 + (weight_t * dt_in_TU)^2;
+        J = (weight_r * dr_in_AU)^2 + (weight_t * dt_in_TU)^2;
         if ~isfinite(J)
             J = 1e30; 
         end
@@ -98,21 +95,17 @@ function trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, d
     
     % uncomment below for reproducibility of GA
     % rng(1); 
-    x_ig = ga(@calc_weighted_sum_of_dR_and_dt, 3, [],[],[],[], lb, ub, [], ga_opts);
-    [x, resnorm, ~, exitflag, ~] = lsqnonlin(@calc_dR, x_ig, lb, ub, opts_lsq);
-    if exitflag <= 0 || resnorm > 1e-6
+    x_ig = ga(@calc_weighted_sum_of_dr_and_dt, 3, [],[],[],[], lb, ub, [], ga_opts);
+    [x, ~, ~, exitflag, ~] = lsqnonlin(@calc_dR_res, x_ig, lb, ub, opts_lsq);
+    if exitflag <= 0
         % uncomment below to visualize last valid trajectory
         % trajectory.draw(10000);
-        error('Flyby targeting optimization did not converge.');
+        error('flybyTargeting_ga failed to converge.');
     end
 
     conicArc = produce_conicArc(x);
     V_sc_flyby_out = conicArc.V_start;
-
     flybyArc = FlybyArc(t_flyby, body_flyby, V_sc_flyby_in, V_sc_flyby_out);
-
-    trajectory = trajectory.addArc(flybyArc);
-    trajectory = trajectory.addArc(conicArc);
 end
 
 % ================= helper =================

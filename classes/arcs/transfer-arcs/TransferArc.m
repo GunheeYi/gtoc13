@@ -13,6 +13,9 @@ classdef (Abstract) TransferArc
         K_end (6,1) {mustBeReal};
         R_end (3,1) {mustBeReal};
         V_end (3,1) {mustBeReal};
+        dR_res (3,1) {mustBeReal}; % residual distance between 
+                                   % propagated and target position at end
+        dr_res (3,1) {mustBeReal};
     end
     methods
         function transferArc = TransferArc(t_start, R_start, V_start, t_end, target)
@@ -51,18 +54,25 @@ classdef (Abstract) TransferArc
         end
 
         % state at end
+        function S_end = get.S_end(transferArc)
+            S_end = transferArc.get_S_end();
+        end
         function K_end = get.K_end(transferArc)
             K_end = transferArc.get_K_end();
-        end
-        function S_end = get.S_end(transferArc)
-            global mu_altaira; %#ok<GVMIS>
-            S_end = K2S(transferArc.K_end, mu_altaira);
         end
         function R_end = get.R_end(transferArc)
             R_end = transferArc.S_end(1:3);
         end
         function V_end = get.V_end(transferArc)
             V_end = transferArc.S_end(4:6);
+        end
+
+        function dR_res = get.dR_res(transferArc)
+            R_target_end = transferArc.target.R_at(transferArc.t_end);
+            dR_res = transferArc.R_end - R_target_end;
+        end
+        function dr_res = get.dr_res(transferArc)
+            dr_res = norm(transferArc.dR_res);
         end
     end
 
@@ -72,6 +82,7 @@ classdef (Abstract) TransferArc
     end
 
     methods (Abstract, Access = protected)
+        S_end = get_S_end(transferArc)
         K_end = get_K_end(transferArc)
     end
 end

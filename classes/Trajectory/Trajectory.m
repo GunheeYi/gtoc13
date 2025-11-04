@@ -48,12 +48,19 @@ classdef Trajectory
         end
         
         function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max)
-            % trajectory = Trajectory_flybyTargeting_shooting(trajectory, target);
-            trajectory = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max);
+            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max);
         end
 
         function draw(trajectory, n_points_per_arc)
             Trajectory_draw(trajectory, n_points_per_arc);
+        end
+
+        function save(trajectory, varargin)
+            Trajectory_save(trajectory, varargin{:});
+        end
+
+        function trajectory = load(~, varargin)
+            trajectory = Trajectory_load(varargin{:});
         end
 
         function exportAsSolution(trajectory, filename)
