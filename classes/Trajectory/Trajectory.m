@@ -51,8 +51,18 @@ classdef Trajectory
             trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max);
         end
 
+        % draw a static plot of the trajectory
         function draw(trajectory, n_points_per_arc)
             Trajectory_draw(trajectory, n_points_per_arc);
+        end
+
+        % draw an interactive figure of the trajectory (by Mercury)
+        function fig = draw_interactive(trajectory, dt)
+            arguments
+                trajectory Trajectory;
+                dt (1,1) {mustBeReal, mustBePositive} = 10 * 86400
+            end
+            fig = Trajectory_draw_interactive(trajectory, dt);
         end
 
         function save(trajectory, varargin)
