@@ -5,7 +5,7 @@ function propagatedArc = ...
         n_controls_tail {mustBeNonnegative, mustBeInteger};
     end
 
-    if n_controls_tail >= propagatedArc.n_controls
+    if n_controls_tail > propagatedArc.n_controls
         error('n_controls_tail must be less than total number of controls.');
     end
 
