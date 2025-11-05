@@ -27,4 +27,5 @@ function Trajectory_draw(trajectory)
     ylim(range_limit);
     zlim(range_limit);
     legend();
+    view(0, 89)
 end
