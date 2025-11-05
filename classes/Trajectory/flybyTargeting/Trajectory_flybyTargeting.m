@@ -35,7 +35,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     % uncomment below to visualize the solution before solar sail optimization
     % trajectory_ = trajectory.addArc(flybyArc);
     % trajectory_ = trajectory_.addArc(conicArc);
-    % trajectory_.draw(10000);
+    % trajectory_.draw();
     % input('Press Enter to continue with solar sail optimization...');
 
     propagatedArc = Trajectory_flybyTargeting_sailing(conicArc);

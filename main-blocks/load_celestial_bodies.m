@@ -2,6 +2,7 @@ function load_celestial_bodies()
     load_planets();
     load_asteroids();
     load_comets();
+    make_celestialBody_placeholder();
 
     % disp_loaded_celestial_bodies();
 end
@@ -58,6 +59,18 @@ function load_comets()
         weight = data{i, 8};
         comets(i, 1) = Comet(id, K0, weight);
     end
+end
+
+function make_celestialBody_placeholder()
+    global celestialBody_placeholder; %#ok<GVMIS>
+    id = 9999;
+    K0 = zeros(6,1);
+    weight = eps;
+    name = "placeholder";
+    mu = 0;
+    r = 0;
+    flybyable = false;
+    celestialBody_placeholder = Planet(id, K0, weight, name, mu, r, flybyable);
 end
 
 function disp_loaded_celestial_bodies() %#ok<DEFNU>

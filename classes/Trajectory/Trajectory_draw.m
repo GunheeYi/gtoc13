@@ -3,6 +3,8 @@ function Trajectory_draw(trajectory)
         trajectory Trajectory;
     end
 
+    global t_max celestialBody_placeholder; %#ok<GVMIS>
+
     figure();
     hold on;
 
@@ -16,6 +18,13 @@ function Trajectory_draw(trajectory)
         end
         arc.draw('-');
     end
+
+    arc_last = trajectory.arc_last;
+    conicArc_projected = ConicArc( ...
+        trajectory.t_end, arc_last.R_end, arc_last.V_end, t_max, ...
+        celestialBody_placeholder ...
+    );
+    conicArc_projected.draw('--', 'DisplayName', 'conic arc, projected');
 
     axis equal;
     grid on;
