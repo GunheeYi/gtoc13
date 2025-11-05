@@ -12,26 +12,11 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target,
 
     global AU TU year_in_secs t_max; %#ok<GVMIS,NUSED>
 
-    arc_last = trajectory.arc_last;
-    t_flyby = arc_last.t_end;
-    body_flyby = arc_last.target;
-    V_sc_flyby_in = arc_last.V_end;
-
-    dt_in_TU_lb = max(dt_min, 1) / TU;
-    if dt_max == 0
-        dt_in_TU_ub = (t_max - t_flyby - 1) / TU;
-    else
-        if t_flyby + dt_max >= t_max
-            warning('dt_max is too large and will be adjusted to fit within t_max.');
-            dt_max = t_max - t_flyby - 1;
-        end
-        dt_in_TU_ub = dt_max / TU;
-    end
-    lb = [1.1, -pi, dt_in_TU_lb];
-    ub = [101,  pi, dt_in_TU_ub];
+    lb = [1.1, -pi, dt_min / TU];
+    ub = [101,  pi, dt_max / TU];
 
     function dR_res = calc_dR_res(x) % position residual
-        conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target);
+        [~, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
         dR_res = conicArc.dR_res;
     end
 
@@ -74,17 +59,15 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target,
         error('flybyTargeting_ga failed to converge.');
     end
 
-    conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target);
-    V_sc_flyby_out = conicArc.V_start;
-    flybyArc = FlybyArc(t_flyby, body_flyby, V_sc_flyby_in, V_sc_flyby_out);
+    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
 end
 
-function conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target)
+function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target)
     global TU; %#ok<GVMIS>
 
     r_multiple_p_flyby = x(1);
     angle_flyby = x(2);
     dt = x(3) * TU;
 
-    conicArc = produceNextConicArcFromFlybyGeometry(arc_last, r_multiple_p_flyby, angle_flyby, dt, target);
+    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, r_multiple_p_flyby, angle_flyby, dt, target);
 end

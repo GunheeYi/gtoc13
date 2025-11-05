@@ -8,9 +8,18 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
     end
 
-    global tol_r;
+    global t_max tol_r; %#ok<GVMIS>
 
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max);
+    t_flyby = trajectory.arc_last.t_end;
+
+    dt_min = max(dt_min, 1);
+    if dt_max == 0
+        dt_max = Inf;
+    end
+    dt_max = min(dt_max, t_max - t_flyby - 1);
+
+    % [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
     fprintf('flybyTargeting() produced dr_res = %.6f km without sail.\n', conicArc.dr_res);
     if conicArc.dr_res < tol_r
         trajectory = trajectory.addArc(flybyArc);

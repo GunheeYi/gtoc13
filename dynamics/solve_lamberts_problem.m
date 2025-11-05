@@ -207,12 +207,8 @@ function [V1plus, V2minus] = solve_lamberts_problem(R1, R2, dt, mu, String)
     %[]Iterates z until its value falls within tolerance value.
     
     if n >= nmax
-        
-        % fprintf('Number of iterations exceeds %0.0f', nmax);
+        fprintf('Number of iterations exceeds %0.0f.\n', nmax);
         %[]Displays this message if the algorithm did not converge.
-
-        error('LambertSolver:NoConvergence', 'Number of iterations exceeds %0.0f', nmax);
-        
     end
     
     f = 1 - y / r1;
