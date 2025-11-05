@@ -47,8 +47,8 @@ classdef Trajectory
             trajectory = Trajectory_startByTargeting(trajectory, target, t_start, vx_start);
         end
         
-        function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max)
-            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max);
+        function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max, use_sail)
+            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sail);
         end
 
         % draw a static plot of the trajectory
