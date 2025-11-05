@@ -1,16 +1,20 @@
+% Method with sailing by Jinsung.
+% Use this when solution `conicArc` produced by other methods without sailing
+% does not target well enough.
+% Refactored into the framework by Gunhee.
 function propagatedArc = Trajectory_flybyTargeting_sailing(conicArc)
-    propagatedArc_coarse = sail_coarse(conicArc);
-    propagatedArc = sail_precise(propagatedArc_coarse);
+    propagatedArc_coarse = refineArcUsingSail_coarse(conicArc);
+    propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse);
 end
 
-function propagatedArc = sail_coarse(conicArc)
+function propagatedArc = refineArcUsingSail_coarse(conicArc)
     propagatedArc = PropagatedArc(conicArc.t_start, ...
         conicArc.R_start, conicArc.V_start, conicArc.t_end, conicArc.target);
     
     [propagatedArc, ~] = refineLastControls(propagatedArc, propagatedArc.n_controls);
 end
 
-function propagatedArc = sail_precise(propagatedArc_coarse)
+function propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse)
     n_controls_tail = 2;
     propagatedArc = propagatedArc_coarse.splitControls_tail(n_controls_tail);
     [propagatedArc, flag] = ...
