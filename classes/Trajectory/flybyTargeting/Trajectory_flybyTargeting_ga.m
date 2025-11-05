@@ -31,7 +31,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target,
     ub = [101,  pi, dt_in_TU_ub];
 
     function dR_res = calc_dR_res(x) % position residual
-        conicArc = produce_conicArc(arc_last, x, target);
+        conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target);
         dR_res = conicArc.dR_res;
     end
 
@@ -74,40 +74,17 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target,
         error('flybyTargeting_ga failed to converge.');
     end
 
-    conicArc = produce_conicArc(arc_last, x, target);
+    conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target);
     V_sc_flyby_out = conicArc.V_start;
     flybyArc = FlybyArc(t_flyby, body_flyby, V_sc_flyby_in, V_sc_flyby_out);
 end
 
-function conicArc = produce_conicArc(arc_last, x, target)
-    t_flyby = arc_last.t_end;
-    body_flyby = arc_last.target;
-    R_flyby = arc_last.R_end;
+function conicArc = produceNextConicArcFromFlybyGeometry_usingX(arc_last, x, target)
+    global TU; %#ok<GVMIS>
 
-    V_body_flyby = body_flyby.V_at(t_flyby);
-    V_sc_flyby_in = arc_last.V_end;
-    Vinf_in = V_sc_flyby_in - V_body_flyby;
-    vinf = norm(Vinf_in);
-
-    % two vectors below, orthogonal to each other,
-    % will be later used to compute standard (ang_flyby = 0) Vinf_out
-    Vinf_in_normed = normed(Vinf_in);
-    Vinf_in_perp_normed = normed( cross( Vinf_in_normed, [0;0;1] ) );
-
-    r_p_flyby = x(1) * body_flyby.r;
-    ang_flyby = x(2);
+    r_multiple_p_flyby = x(1);
+    angle_flyby = x(2);
     dt = x(3) * TU;
 
-    turn_angle = body_flyby.calc_turn_angle(vinf, r_p_flyby);
-    Vinf_out_standard = vinf * ( ...
-        cos(turn_angle)*Vinf_in_normed + sin(turn_angle)*Vinf_in_perp_normed ...
-    );
-
-    Vinf_out = make_dcm_rodrigues(Vinf_in, ang_flyby) * Vinf_out_standard;
-
-    V_sc_flyby_out = V_body_flyby + Vinf_out;
-
-    t_rendezvous = t_flyby + dt;
-
-    conicArc = ConicArc(t_flyby, R_flyby, V_sc_flyby_out, t_rendezvous, target);
+    conicArc = produceNextConicArcFromFlybyGeometry(arc_last, r_multiple_p_flyby, angle_flyby, dt, target);
 end
