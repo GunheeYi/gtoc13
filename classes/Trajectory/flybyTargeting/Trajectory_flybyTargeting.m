@@ -1,4 +1,4 @@
-function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max)
+function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sail)
     arguments
         trajectory Trajectory;
         target CelestialBody;
@@ -6,6 +6,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         dt_max {mustBeNonnegative};
         % min/maximum time after flyby to rendezvous with target [s]
         % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
+        use_sail logical = true;
     end
 
     global t_max tol_r; %#ok<GVMIS>
@@ -25,6 +26,10 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         trajectory = trajectory.addArc(flybyArc);
         trajectory = trajectory.addArc(conicArc);
         return;
+    end
+
+    if ~use_sail
+        error('flybyTargeting did not converge. Try setting use_sail = true.');
     end
 
     % uncomment below to visualize the solution before solar sail optimization
