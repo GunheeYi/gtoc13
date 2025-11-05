@@ -1,4 +1,10 @@
 classdef ConicArc < TransferArc
+    % This is an arc 
+    % whose start is defined by a time `t_start`
+    % and cartesian state `R_start` and `V_start` at that time.
+    % It follows a conic trajectory around Altaira until time `t_end`.
+    % The arc does not necessarily rendezvous with the target body,
+    % and the residual position at `t_end` is given by `dR_res`.
     methods
         function conicArc = ConicArc(t_start, R_start, V_start, t_end, target)
             conicArc@TransferArc(t_start, R_start, V_start, t_end, target);
