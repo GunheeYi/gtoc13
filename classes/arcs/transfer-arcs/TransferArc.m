@@ -77,7 +77,7 @@ classdef (Abstract) TransferArc
     end
 
     methods (Abstract)
-        draw(transferArc, n_points, varargin) % draw
+        draw(transferArc, varargin) % draw
         solutionRows = to_solutionRows(conicArc)
     end
 

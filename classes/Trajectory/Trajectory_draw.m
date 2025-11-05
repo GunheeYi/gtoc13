@@ -1,7 +1,6 @@
-function Trajectory_draw(trajectory, n_points_per_arc)
+function Trajectory_draw(trajectory)
     arguments
         trajectory Trajectory;
-        n_points_per_arc {mustBePositive} = 100;
     end
 
     figure();
@@ -15,7 +14,7 @@ function Trajectory_draw(trajectory, n_points_per_arc)
         if isa(arc, "FlybyArc")
             continue; % flyby arcs are not drawn
         end
-        arc.draw(n_points_per_arc, '-');
+        arc.draw('-');
     end
 
     axis equal;

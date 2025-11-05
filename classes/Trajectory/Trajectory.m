@@ -52,8 +52,8 @@ classdef Trajectory
         end
 
         % draw a static plot of the trajectory
-        function draw(trajectory, n_points_per_arc)
-            Trajectory_draw(trajectory, n_points_per_arc);
+        function draw(trajectory)
+            Trajectory_draw(trajectory);
         end
 
         % draw an interactive figure of the trajectory (by Mercury)

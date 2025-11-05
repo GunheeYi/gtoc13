@@ -46,10 +46,9 @@ classdef PropagatedArc < TransferArc
                 PropagatedArc_splitControls_tail(propagatedArc, n_controls_tail);
         end
 
-        function draw(propagatedArc, n_points, varargin)
+        function draw(propagatedArc, varargin)
             arguments
                 propagatedArc PropagatedArc; %#ok<INUSA>
-                n_points {mustBePositive} = 100; %#ok<INUSA>
             end
             arguments (Repeating)
                 varargin;

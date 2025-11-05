@@ -64,8 +64,7 @@ trajectory = trajectory.load("my_trajectory.mat");
 
 %% plot results
 % Draw the trajectory. 
-% The argument specifies the number of points per arc. 100 by default.
-trajectory.draw(10000);
+trajectory.draw();
 
 % Draw an interactive figure of the trajectory (by Mercury).
 % The argument specifies the time step in seconds. 10 days by default.

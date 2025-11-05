@@ -55,7 +55,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target,
     [x, ~, ~, exitflag, ~] = lsqnonlin(@calc_dR_res, x0, lb, ub, opts_lsq);
     if exitflag <= 0
         % uncomment below to visualize last valid trajectory
-        % trajectory.draw(10000);
+        % trajectory.draw();
         error('flybyTargeting_ga failed to converge.');
     end
 

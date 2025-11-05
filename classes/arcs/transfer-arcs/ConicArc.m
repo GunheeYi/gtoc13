@@ -11,10 +11,9 @@ classdef ConicArc < TransferArc
         end
 
         % draw
-        function draw(conicArc, n_points, varargin)
+        function draw(conicArc, varargin)
             arguments
                 conicArc ConicArc;
-                n_points {mustBePositive} = 100;
             end
             arguments (Repeating)
                 varargin;
@@ -22,19 +21,13 @@ classdef ConicArc < TransferArc
 
             global mu_altaira AU; %#ok<GVMIS>
 
-            M_start = conicArc.K_start(6);
-            M_end = conicArc.K_end(6);
-            if M_end < M_start
-                M_end = M_end + 2*pi;
-            end
-
-            % TODO: draw more frequently for steep arcs (near altaira)
-            Ms = linspace(M_start, M_end, n_points);
-
-            Ks = repmat(conicArc.K_start, 1, n_points);
-            Ks(6, :) = Ms;
-            Ss = K2S(Ks, mu_altaira);
+            S0 = K2S(conicArc.K_start, mu_altaira);
+            Sdot = @(~, S) two_body_dynamics(S, mu_altaira);
+            tspan = [conicArc.t_start, conicArc.t_end];
+            [~, Ss] = ode45(Sdot, tspan, S0);
+            Ss = Ss';
             Rs = Ss(1:3, :);
+
             plot3mat( ...
                 Rs / AU, varargin{:}, ...
                 'DisplayName', sprintf('conic arc to %s', conicArc.target.name) ...
