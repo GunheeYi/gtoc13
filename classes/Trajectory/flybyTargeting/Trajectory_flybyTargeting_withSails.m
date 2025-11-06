@@ -27,9 +27,26 @@ function propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse)
 end
 
 function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_last)
-    % decision x = [alpha1 beta1 alpha2 beta2 ... alphaN betaN]
-    lb = repmat([0 -pi]', n_controls_last, 1);
-    ub = repmat([pi/2 pi]', n_controls_last, 1);
+    global TU; %#ok<GVMIS>
+
+    % decision x = [dt1 alpha1 beta1 dt2 alpha2 beta2 ... dtN alphaN betaN]
+    lb = nan(3 * n_controls_last, 1);
+    ub = nan(3 * n_controls_last, 1);
+    for i = 1:n_controls_last
+        % dt bounds: [0.5 * dt_initial, 1.5 * dt_initial]
+        control = propagatedArc.controls(end - (n_controls_last - i));
+        dt_in_TU = control.dt / TU;
+        lb(3*i-2) = 0.5 * dt_in_TU;
+        ub(3*i-2) = 1.5 * dt_in_TU;
+
+        % alpha bounds: [0deg, 90deg]
+        lb(3*i-1) = 0;
+        ub(3*i-1) = pi/2;
+
+        % beta bounds: [-180deg, 180deg]
+        lb(3*i) = -pi;
+        ub(3*i) = pi;
+    end
 
     function dr_res = fun(x)
         propagatedArc = propagatedArc.updateLastControlsFromVector(x);
@@ -57,7 +74,7 @@ function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_la
     );
 
     fprintf('Initiating GA to generate inital seed for sail control...\n');
-    [x0, dr_res] = ga(@fun, 2 * n_controls_last, [],[],[],[], lb, ub, [], options_ga);
+    [x0, dr_res] = ga(@fun, 3 * n_controls_last, [],[],[],[], lb, ub, [], options_ga);
     fprintf('Initial GA seed for sail control produced dr_res = %.6fkm.\n', dr_res);
     fprintf('Refining sail control using fmincon...\n');
     [x, dr_res, flag] = fmincon(@fun, x0, [],[],[],[], lb, ub, [], options_fmincon);
