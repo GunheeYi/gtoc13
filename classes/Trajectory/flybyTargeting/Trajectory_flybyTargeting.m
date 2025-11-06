@@ -9,7 +9,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         use_sail logical = true;
     end
 
-    global t_max tol_r; %#ok<GVMIS>
+    global t_max AU tol_r; %#ok<GVMIS>
 
     t_flyby = trajectory.arc_last.t_end;
 
@@ -19,9 +19,10 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
     dt_max = min(dt_max, t_max - t_flyby - 1);
 
-    % [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
-    fprintf('flybyTargeting(%s) produced dr_res = %.6f km without sail.\n', target.name, conicArc.dr_res);
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
+    % [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
+    fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) without sail.\n', ...
+        target.name, conicArc.dr_res, conicArc.dr_res / AU);
     if conicArc.dr_res < tol_r
         trajectory = trajectory.addArc(flybyArc);
         trajectory = trajectory.addArc(conicArc);
@@ -38,7 +39,8 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
 
     propagatedArc = Trajectory_flybyTargeting_sailing(conicArc);
-    fprintf('flybyTargeting(%s) produced dr_res = %.6f km with sail.\n', target.name, propagatedArc.dr_res);
+    fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) with sail.\n', ...
+        target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);
     if propagatedArc.dr_res > tol_r
         error('flybyTargeting(%s) did not converge even when using solar sail.', target.name);
     end
