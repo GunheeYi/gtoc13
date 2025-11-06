@@ -28,7 +28,6 @@ end
 
 function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_last)
     % decision x = [alpha1 beta1 alpha2 beta2 ... alphaN betaN]
-    x0 = propagatedArc.exportLastControlsAsVector(n_controls_last);
     lb = repmat([0 -pi]', n_controls_last, 1);
     ub = repmat([pi/2 pi]', n_controls_last, 1);
 
@@ -37,14 +36,14 @@ function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_la
         dr_res = propagatedArc.dr_res;
     end
 
-    function [c, ceq] = nonlcon(x)
-        global tol_r; %#ok<GVMIS>
-        propagatedArc = propagatedArc.updateLastControlsFromVector(x);
-        c = propagatedArc.dr_res - tol_r; % residual distance must be < 0.1 km
-        ceq = []; % no equality constraints
-    end
-
-    opts = optimoptions('fmincon', ...
+    options_ga = optimoptions('ga', ...
+        'Display','iter', ...
+        'UseParallel', false, ...      % 병렬 가능하면 true
+        'MaxGenerations', 400, ...
+        'PopulationSize', 400, ...
+        'FunctionTolerance', 1e-4);
+    
+    options_fmincon = optimoptions('fmincon', ...
         'Algorithm','interior-point', ...
         'Display','iter-detailed', ...
         'MaxFunctionEvaluations', 30000, ...
@@ -57,7 +56,12 @@ function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_la
         'ObjectiveLimit', 0.1 ...
     );
 
-    [x, ~, flag] = fmincon(@fun, x0, [],[],[],[], lb, ub, @nonlcon, opts);
+    fprintf('Initiating GA to generate inital seed for sail control...\n');
+    [x0, dr_res] = ga(@fun, 2 * n_controls_last, [],[],[],[], lb, ub, [], options_ga);
+    fprintf('Initial GA seed for sail control produced dr_res = %.6fkm.\n', dr_res);
+    fprintf('Refining sail control using fmincon...\n');
+    [x, dr_res, flag] = fmincon(@fun, x0, [],[],[],[], lb, ub, [], options_fmincon);
+    fprintf('Refined sail control produced dr_res = %.6fkm.\n', dr_res);
 
     propagatedArc = propagatedArc.updateLastControlsFromVector(x);
 end
