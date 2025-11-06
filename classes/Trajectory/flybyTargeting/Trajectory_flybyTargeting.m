@@ -21,7 +21,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
 
     % [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
     [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
-    fprintf('flybyTargeting() produced dr_res = %.6f km without sail.\n', conicArc.dr_res);
+    fprintf('flybyTargeting(%s) produced dr_res = %.6f km without sail.\n', target.name, conicArc.dr_res);
     if conicArc.dr_res < tol_r
         trajectory = trajectory.addArc(flybyArc);
         trajectory = trajectory.addArc(conicArc);
@@ -29,19 +29,18 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
 
     if ~use_sail
-        error('flybyTargeting did not converge. Try setting use_sail = true.');
+        % uncomment below to visualize the solution before solar sail optimization
+        trajectory_ = trajectory.addArc(flybyArc);
+        trajectory_ = trajectory_.addArc(conicArc);
+        trajectory_.draw();
+        trajectory_.draw_interactive();
+        error('flybyTargeting(%s) did not converge. Try setting use_sail = true.', target.name);
     end
 
-    % uncomment below to visualize the solution before solar sail optimization
-    % trajectory_ = trajectory.addArc(flybyArc);
-    % trajectory_ = trajectory_.addArc(conicArc);
-    % trajectory_.draw();
-    % input('Press Enter to continue with solar sail optimization...');
-
     propagatedArc = Trajectory_flybyTargeting_sailing(conicArc);
-    fprintf('flybyTargeting() produced dr_res = %.6f km with sail.\n', propagatedArc.dr_res);
+    fprintf('flybyTargeting(%s) produced dr_res = %.6f km with sail.\n', target.name, propagatedArc.dr_res);
     if propagatedArc.dr_res > tol_r
-        error('flybyTargeting did not converge even when using solar sail.');
+        error('flybyTargeting(%s) did not converge even when using solar sail.', target.name);
     end
 
     trajectory = trajectory.addArc(flybyArc);
