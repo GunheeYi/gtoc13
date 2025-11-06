@@ -37,13 +37,29 @@ function fig = plotSystem(filepath, dt)
     Nb  = numel(idxAll);
     N   = numel(t);
 
-    K0  = [data(idxAll).K0]';
-    K   = IVP(K0, t, mu);
-    S   = K2S(K,  mu);
+    function posAll = load_or_calculate_posAll()
+        path_cache = "mercury/plotSystem-cache.mat";
+        if isfile(path_cache)
+            loaded = load(path_cache);
+            if loaded.t0 == t0 && loaded.dt == dt
+                posAll = loaded.posAll;
+                fprintf("Loaded cached posAll from %s.\n", path_cache);
+                return;
+            end
+        end
 
-    % posAll: 3 x N x Nb
-    S6      = reshape(S, 6, Nb, N);            % 6 x Nb x N
-    posAll  = permute(S6(1:3,:,:), [1 3 2]);   % 3 x N x Nb
+        K0  = [data(idxAll).K0]';
+        K   = IVP(K0, t, mu);
+        S   = K2S(K,  mu);
+
+        % posAll: 3 x N x Nb
+        S6      = reshape(S, 6, Nb, N);            % 6 x Nb x N
+        posAll  = permute(S6(1:3,:,:), [1 3 2]);   % 3 x N x Nb
+
+        save(path_cache, 't0', 'dt', 'posAll');
+    end
+
+    posAll = load_or_calculate_posAll();
 
     % global→local 인덱스
     loc.Planet   = arrayfun(@(g) find(idxAll==g,1), indices.Planet);
