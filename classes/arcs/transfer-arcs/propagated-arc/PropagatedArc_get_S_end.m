@@ -30,10 +30,11 @@ function S_end = propagate_with_constant_control(S_start, control)
         dSdt = [V; A];
     end
 
-    tspan = [0 control.dt];
-    options = odeset('RelTol',1e-11,'AbsTol',1e-14);
-
-    [~, Ss] = ode113(@(~, S) odefun(S), tspan, S_start, options);
+    tspan = [0 control.dt_scaled];
+    options = odeset('RelTol', 1e-8, 'AbsTol', 1e-10, 'MinStep', 1e-10);
+    warning('error', 'MATLAB:ode15s:IntegrationTolNotMet');
+    [~, Ss] = ode15s(@(~, S) odefun(S), tspan, S_start, options);
+    warning('on', 'MATLAB:ode15s:IntegrationTolNotMet');
     S_end = Ss(end, :)';
 end
 

@@ -19,10 +19,10 @@ classdef PropagatedArc < TransferArc
             propagatedArc@TransferArc(t_start, R_start, V_start, t_end, target);
 
             n_controls = (t_end - t_start) / 60;
-            n_controls = max(2, min(20, round(n_controls)));
+            n_controls = max(2, min(10, round(n_controls)));
             
             dt = (t_end - t_start) / n_controls;
-            control = Control(dt, pi/2 - deg2rad(1e-1), 0);
+            control = Control(dt, 1, pi/2 - deg2rad(1e-1), 0);
             % 0.1deg: to make initial guess be between lb and ub
             propagatedArc.controls = repmat(control, 1, n_controls);
         end

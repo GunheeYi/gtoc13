@@ -43,6 +43,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         error('flybyTargeting(%s) did not converge. Try setting use_sail = true.', target.name);
     end
 
+    fprintf('Trying with sails...\n');
     propagatedArc = Trajectory_flybyTargeting_withSails(conicArc);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) with sail.\n', ...
         target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);

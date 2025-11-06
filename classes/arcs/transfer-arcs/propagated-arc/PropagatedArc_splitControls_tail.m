@@ -19,7 +19,7 @@ function propagatedArc = ...
         n_split = max(1, min(4, round(n_split)));
         dt_split = control.dt / n_split;
         for i = 1:n_split
-            control_split = Control(dt_split, control.alpha, control.beta);
+            control_split = Control(dt_split, control.dt_scaling_factor, control.alpha, control.beta);
             controls_tail_split = [controls_tail_split, control_split]; %#ok<AGROW>
         end
     end

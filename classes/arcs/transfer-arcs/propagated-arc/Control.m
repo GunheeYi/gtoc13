@@ -1,13 +1,18 @@
 classdef Control
     properties
         dt {mustBeNonnegative}
+        dt_scaling_factor % to allow global scaling of dt during optimization
         alpha
         beta
     end
+    properties (Dependent)
+        dt_scaled
+    end
     methods
-        function control = Control(dt, alpha, beta)
+        function control = Control(dt, dt_scaling_factor, alpha, beta)
             arguments
                 dt {mustBeNonnegative}
+                dt_scaling_factor {mustBePositive}
                 alpha
                 beta
             end
@@ -16,8 +21,12 @@ classdef Control
             mustBeBetween(beta, -pi, pi);
 
             control.dt = dt;
+            control.dt_scaling_factor = dt_scaling_factor;
             control.alpha = alpha;
             control.beta = beta;
+        end
+        function dt_scaled = get.dt_scaled(control)
+            dt_scaled = control.dt * control.dt_scaling_factor;
         end
     end
 end

@@ -14,13 +14,12 @@ function vector = PropagatedArc_exportLastControlsAsVector(propagatedArc, n_cont
 end
 
 function vector = controls_to_vector(controls)
-    global TU; %#ok<GVMIS>
     n_controls = length(controls);
-    vector = nan(n_controls*3, 1);
+    vector = nan(2 * n_controls + 1, 1);
     for i = 1:n_controls
         control = controls(i);
-        vector(3*i-2) = control.dt / TU;
-        vector(3*i-1) = control.alpha;
-        vector(3*i) = control.beta;
+        vector(2*i-1) = control.alpha;
+        vector(2*i) = control.beta;
     end
+    vector(end) = controls(end).dt_scaling_factor;
 end

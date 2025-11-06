@@ -3,22 +3,31 @@
 % does not target well enough.
 % Refactored into the framework by Gunhee.
 function propagatedArc = Trajectory_flybyTargeting_withSails(conicArc)
+    global AU; %#ok<GVMIS>
+    fprintf('Refining arc using solar sail propulsion...\n');
+    fprintf('  Initial dr_res = %.0fkm (%.2fAU)\n', conicArc.dr_res, conicArc.dr_res / AU);
+    fprintf('  Starting coarse optimization...\n');
     propagatedArc_coarse = refineArcUsingSail_coarse(conicArc);
+    fprintf('  Coarse optimization produced dr_res = %.0fkm (%.2fAU)\n', ...
+        propagatedArc_coarse.dr_res, propagatedArc_coarse.dr_res / AU);
+    fprintf('  Starting precise optimization...\n');
     propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse);
+    fprintf('  Precise optimization produced dr_res = %.0fkm (%.2fAU)\n', ...
+        propagatedArc.dr_res, propagatedArc.dr_res / AU);
 end
 
 function propagatedArc = refineArcUsingSail_coarse(conicArc)
     propagatedArc = PropagatedArc(conicArc.t_start, ...
         conicArc.R_start, conicArc.V_start, conicArc.t_end, conicArc.target);
     
-    [propagatedArc, ~] = refineLastControls(propagatedArc, propagatedArc.n_controls);
+    [propagatedArc, ~] = refineLastControls(propagatedArc, propagatedArc.n_controls, 1e7);
 end
 
 function propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse)
     n_controls_tail = 2;
     propagatedArc = propagatedArc_coarse.splitControls_tail(n_controls_tail);
     [propagatedArc, flag] = ...
-        refineLastControls(propagatedArc, propagatedArc.n_controls_tail);
+        refineLastControls(propagatedArc, propagatedArc.n_controls_tail, 1e-3);
         % note that `n_controls_tail` ~= `propagatedArc.n_controls_tail`
         % because of the splitting of tail in `splitControls_tail()`
     if flag <= 0
@@ -26,31 +35,19 @@ function propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse)
     end
 end
 
-function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_last)
-    global TU; %#ok<GVMIS>
-
-    % decision x = [dt1 alpha1 beta1 dt2 alpha2 beta2 ... dtN alphaN betaN]
-    lb = nan(3 * n_controls_last, 1);
-    ub = nan(3 * n_controls_last, 1);
-    for i = 1:n_controls_last
-        % dt bounds: [0.5 * dt_initial, 1.5 * dt_initial]
-        control = propagatedArc.controls(end - (n_controls_last - i));
-        dt_in_TU = control.dt / TU;
-        lb(3*i-2) = 0.5 * dt_in_TU;
-        ub(3*i-2) = 1.5 * dt_in_TU;
-
-        % alpha bounds: [0deg, 90deg]
-        lb(3*i-1) = 0;
-        ub(3*i-1) = pi/2;
-
-        % beta bounds: [-180deg, 180deg]
-        lb(3*i) = -pi;
-        ub(3*i) = pi;
-    end
+function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_last, FitnessLimit)
+    % decision x = [alpha1 beta1 alpha2 beta2 ... alphaN betaN global_dt_scaling_factor]
+    lb = [repmat([   0 -pi], 1, n_controls_last), 0.5];
+    ub = [repmat([pi/2  pi], 1, n_controls_last), 2.0];
 
     function dr_res = fun(x)
         propagatedArc = propagatedArc.updateLastControlsFromVector(x);
-        dr_res = propagatedArc.dr_res;
+        try
+            dr_res = propagatedArc.dr_res;
+        catch
+            dr_res = nan; % in case of propagation failure
+                          % TODO: how to handle properly?
+        end
     end
 
     options_ga = optimoptions('ga', ...
@@ -58,7 +55,9 @@ function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_la
         'UseParallel', false, ...      % 병렬 가능하면 true
         'MaxGenerations', 400, ...
         'PopulationSize', 400, ...
-        'FunctionTolerance', 1e-4);
+        'FunctionTolerance', 1e-4, ...
+        'FitnessLimit', FitnessLimit ...
+    );
     
     options_fmincon = optimoptions('fmincon', ...
         'Algorithm','interior-point', ...
@@ -69,12 +68,12 @@ function [propagatedArc, flag] = refineLastControls(propagatedArc, n_controls_la
         'OptimalityTolerance', 1e-6, ...
         'ConstraintTolerance', 1e-3, ...
         'FiniteDifferenceType', 'central', ...
-        'TypicalX', 0.1*ones(2*n_controls_last,1), ...
+        'TypicalX', [0.1*ones(1, 2*n_controls_last), 1], ...
         'ObjectiveLimit', 0.1 ...
     );
 
     fprintf('Initiating GA to generate inital seed for sail control...\n');
-    [x0, dr_res] = ga(@fun, 3 * n_controls_last, [],[],[],[], lb, ub, [], options_ga);
+    [x0, dr_res] = ga(@fun, 2 * n_controls_last + 1, [],[],[],[], lb, ub, [], options_ga);
     fprintf('Initial GA seed for sail control produced dr_res = %.6fkm.\n', dr_res);
     fprintf('Refining sail control using fmincon...\n');
     [x, dr_res, flag] = fmincon(@fun, x0, [],[],[],[], lb, ub, [], options_fmincon);
