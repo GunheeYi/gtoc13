@@ -2,7 +2,7 @@
 % Use this when solution `conicArc` produced by other methods without sailing
 % does not target well enough.
 % Refactored into the framework by Gunhee.
-function propagatedArc = Trajectory_flybyTargeting_sailing(conicArc)
+function propagatedArc = Trajectory_flybyTargeting_withSails(conicArc)
     propagatedArc_coarse = refineArcUsingSail_coarse(conicArc);
     propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse);
 end
