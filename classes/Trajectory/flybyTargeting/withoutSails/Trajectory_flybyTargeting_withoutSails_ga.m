@@ -1,6 +1,6 @@
 % Method using `ga` and `lsqnonlin` without sailing, by Jaewoo.
 % Refactored into the framework by Gunhee.
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max)
     arguments
         trajectory Trajectory;
         target CelestialBody;

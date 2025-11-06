@@ -19,8 +19,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
     dt_max = min(dt_max, t_max - t_flyby - 1);
 
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
-    % [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) without sail.\n', ...
         target.name, conicArc.dr_res, conicArc.dr_res / AU);
     if conicArc.dr_res < tol_r

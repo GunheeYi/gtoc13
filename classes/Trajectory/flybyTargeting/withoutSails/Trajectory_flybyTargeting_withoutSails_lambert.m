@@ -4,7 +4,7 @@
 % 진성이형꺼 그대로 옮겼는데도 수렴 안됨,, why????
 % 현재 버전은 수렴하고자 좀 수정해본 것
 
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_lambert(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max)
     arguments
         trajectory Trajectory;
         target CelestialBody;
