@@ -5,9 +5,17 @@ classdef ConicArc < TransferArc
     % It follows a conic trajectory around Altaira until time `t_end`.
     % The arc does not necessarily rendezvous with the target body,
     % and the residual position at `t_end` is given by `dR_res`.
+    properties (Dependent)
+        r_min % closest approach distance to Altaira
+    end
+
     methods
         function conicArc = ConicArc(t_start, R_start, V_start, t_end, target)
             conicArc@TransferArc(t_start, R_start, V_start, t_end, target);
+        end
+
+        function r_min = get.r_min(conicArc)
+            r_min = ConicArc_get_r_min(conicArc);
         end
 
         % draw
