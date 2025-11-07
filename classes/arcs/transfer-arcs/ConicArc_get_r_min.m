@@ -10,6 +10,10 @@ function r_min = ConicArc_get_r_min(conicArc)
 
     a = conicArc.K_start(1);
     e = conicArc.K_start(2);
+    h = norm(cross(R_start, V_start));
+    p = h^2 / mu_altaira;
+    r_p = p / (1+e);
+
     M_start = deg2rad(conicArc.K_start(6));
     M_end = deg2rad(conicArc.K_end(6));
 
