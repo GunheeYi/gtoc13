@@ -6,6 +6,7 @@ classdef Trajectory
         arc_last;
         t_end;
         R_end;
+        n_arcs;
         n_flybys;
         n_flybys_possible; % `n_flyby` + (last conic arc converges to target) ? 1 : 0 
     end
@@ -31,6 +32,10 @@ classdef Trajectory
             R_end = trajectory.arc_last.R_end;
         end
 
+        function n_arcs = get.n_arcs(trajectory)
+            n_arcs = numel(trajectory.arcs);
+        end
+
         function n_flybys = get.n_flybys(trajectory)
             n_flybys = 0;
             for i = 1:length(trajectory.arcs)
@@ -41,9 +46,7 @@ classdef Trajectory
         end
 
         function n_flybys_possible = get.n_flybys_possible(trajectory)
-            try 
-                trajectory.arc_last;
-            catch
+            if isempty(trajectory.arcs)
                 n_flybys_possible = 0;
                 return;
             end
