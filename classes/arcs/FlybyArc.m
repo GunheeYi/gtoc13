@@ -2,6 +2,11 @@ classdef FlybyArc
     properties
         t {mustBeNonnegative};
         body CelestialBody;
+        R_sc (3,1) {mustBeReal}; 
+            % Position of spacecraft at flyby time.
+            % Storing this separately because no matter how deliberately the propagation is done,
+            % the final propagated position may not exactly match with the body's ephemeris position 
+            % due to numerical errors. This property will be only used for output purposes.
         V_in (3,1) {mustBeReal};
         V_out (3,1) {mustBeReal};
     end
@@ -19,10 +24,11 @@ classdef FlybyArc
         V_end
     end
     methods
-        function flybyArc = FlybyArc(t, body, V_in, V_out)
+        function flybyArc = FlybyArc(t, body, R_sc, V_in, V_out)
             arguments
                 t {mustBeNonnegative};
                 body CelestialBody;
+                R_sc (3,1) {mustBeReal};
                 V_in (3,1) {mustBeReal};
                 V_out (3,1) {mustBeReal};
             end
@@ -38,6 +44,7 @@ classdef FlybyArc
 
             flybyArc.t = t;
             flybyArc.body = body;
+            flybyArc.R_sc = R_sc;
             flybyArc.V_in = V_in;
             flybyArc.V_out = V_out;
         end
@@ -86,12 +93,12 @@ classdef FlybyArc
         function solutionRows = to_solutionRows(flybyArc)
             solutionRow1 = SolutionRow( ...
                 flybyArc.body.id, 1, flybyArc.t_start, ...
-                flybyArc.R_start, flybyArc.V_start, ...
+                flybyArc.R_sc, flybyArc.V_start, ...
                 flybyArc.Vinf_in ...
             );
             solutionRow2 = SolutionRow( ...
                 flybyArc.body.id, 1, flybyArc.t_end, ...
-                flybyArc.R_end, flybyArc.V_end, ...
+                flybyArc.R_sc, flybyArc.V_end, ...
                 flybyArc.Vinf_out ...
             );
             solutionRows = [solutionRow1; solutionRow2];

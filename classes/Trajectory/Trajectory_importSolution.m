@@ -25,7 +25,7 @@ function trajectory = Trajectory_importSolution(filename)
 
         if id > 0 % is a flyby arc
             body = findBodyById(id);
-            flybyArc = FlybyArc(t1, body, V1, V2);
+            flybyArc = FlybyArc(t1, body, R1, V1, V2);
             trajectory = trajectory.addArc(flybyArc);
             continue;
         end

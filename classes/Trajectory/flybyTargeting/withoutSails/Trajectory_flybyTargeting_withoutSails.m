@@ -23,7 +23,7 @@ function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, d
     R_start = arc_last.R_end;
     V_start = arc_last.V_end;
 
-    flybyArc = FlybyArc(t_start, body_current, V_start, V_start);
+    flybyArc = FlybyArc(t_start, body_current, R_start, V_start, V_start);
 
     lb = dt_min / TU;
     ub = dt_max / TU;
