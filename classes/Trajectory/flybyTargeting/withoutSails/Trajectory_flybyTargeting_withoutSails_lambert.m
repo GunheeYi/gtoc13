@@ -4,7 +4,7 @@
 % 진성이형꺼 그대로 옮겼는데도 수렴 안됨,, why????
 % 현재 버전은 수렴하고자 좀 수정해본 것
 
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max, allow_low_pass)
     arguments
         trajectory Trajectory;
         target CelestialBody;
@@ -12,6 +12,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(t
         dt_max {mustBeNonnegative};
         % min/maximum time after flyby to rendezvous with target [s]
         % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
+        allow_low_pass logical = false; % under 0.05AU
     end
 
     [r_multiple_p_flyby, angle_flyby, dt] = search_whole_timespan(trajectory, target, dt_min, dt_max);
@@ -91,7 +92,15 @@ function [flybyArc, conicArc] = search_around_dt_seed(trajectory, r_multiple_p_f
     );
 
     function dr_res = fun(x) % position residual
-        [~, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, x(1), x(2), x(3), target);
+        dr_res = nan;
+        try
+            [~, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, x(1), x(2), x(3), target);
+        catch % in case of propagation failure or too low pass
+            return;
+        end
+        if ~allow_low_pass && conicArc.passes_low()
+            return;
+        end
         dr_res = conicArc.dr_res;
     end
 

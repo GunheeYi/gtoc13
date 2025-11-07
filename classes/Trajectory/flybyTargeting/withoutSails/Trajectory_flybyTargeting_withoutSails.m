@@ -1,16 +1,16 @@
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_low_pass)
     body_current = trajectory.arc_last.target;
     if ~body_current.flybyable
         fprintf('Current body (%s) is not flybyable. Making continuing arcs without targeting.\n', body_current.name);
-        [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max);
+        [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max, allow_low_pass);
         return;
     end
 
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max); % by Jaewoo
-    % [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max); % by Jinsung
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max, allow_low_pass); % by Jaewoo
+    % [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max, allow_low_pass); % by Jinsung
 end
 
-function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max)
+function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max, allow_low_pass)
     % Make continuing arcs that just passes through the last body,
     % without performing any flyby maneuver.
     % `conicArc` is set to minimize residual position error from target at the end.
@@ -29,8 +29,17 @@ function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, d
     ub = dt_max / TU;
 
     function dr_res = calc_dr_res(dt)
+        dr_res = nan;
         t_end = t_start + dt;
-        conicArc = ConicArc(t_start, R_start, V_start, t_end, target);
+        try
+            conicArc = ConicArc(t_start, R_start, V_start, t_end, target);
+        catch % in case of propagation failure or too low pass
+            return;
+        end
+        if ~allow_low_pass && conicArc.passes_low()
+            dr_res = nan;
+            return;
+        end
         dr_res = conicArc.dr_res;
     end
 

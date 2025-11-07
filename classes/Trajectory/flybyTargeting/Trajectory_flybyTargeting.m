@@ -1,14 +1,4 @@
-function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails)
-    arguments
-        trajectory Trajectory;
-        target CelestialBody;
-        dt_min {mustBeNonnegative};
-        dt_max {mustBeNonnegative};
-        % min/maximum time after flyby to rendezvous with target [s]
-        % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
-        use_sails logical = true;
-    end
-
+function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass)
     global t_max AU tol_r; %#ok<GVMIS>
 
     arc_last = trajectory.arc_last;
@@ -25,7 +15,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
     dt_max = min(dt_max, t_max - t_flyby - 1);
 
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max);
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_low_pass);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) without sail.\n', ...
         target.name, conicArc.dr_res, conicArc.dr_res / AU);
     if conicArc.dr_res < tol_r
@@ -44,7 +34,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     end
 
     fprintf('Trying with sails...\n');
-    propagatedArc = Trajectory_flybyTargeting_withSails(conicArc);
+    propagatedArc = Trajectory_flybyTargeting_withSails(conicArc, allow_low_pass);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) with sail.\n', ...
         target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);
     if propagatedArc.dr_res > tol_r

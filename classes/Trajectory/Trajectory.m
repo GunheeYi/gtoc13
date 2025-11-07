@@ -47,8 +47,18 @@ classdef Trajectory
             trajectory = Trajectory_startByTargeting(trajectory, target, t_start, vx_start);
         end
         
-        function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max, use_sail)
-            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sail);
+        function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass)
+            arguments
+                trajectory Trajectory;
+                target CelestialBody;
+                dt_min {mustBeNonnegative};
+                dt_max {mustBeNonnegative};
+                % min/maximum time after flyby to rendezvous with target [s]
+                % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
+                use_sails logical = true;
+                allow_low_pass logical = false; % under 0.05AU
+            end
+            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass);
         end
 
         % draw a static plot of the trajectory

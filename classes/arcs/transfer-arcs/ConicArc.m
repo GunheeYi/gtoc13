@@ -11,11 +11,28 @@ classdef ConicArc < TransferArc
 
     methods
         function conicArc = ConicArc(t_start, R_start, V_start, t_end, target)
+            global AU; %#ok<GVMIS>
+            
             conicArc@TransferArc(t_start, R_start, V_start, t_end, target);
+            if conicArc.passes_too_low()
+                error('ConicArc:passes_too_low', ...
+                    'ConicArc passes too close to Altaira (r_min = %.4fAU).', ...
+                    conicArc.r_min / AU);
+            end
         end
 
         function r_min = get.r_min(conicArc)
             r_min = ConicArc_get_r_min(conicArc);
+        end
+
+        function tf = passes_too_low(conicArc)
+            global AU; %#ok<GVMIS>
+            tf = (conicArc.r_min < 0.01 * AU);
+        end
+
+        function tf = passes_low(conicArc)
+            global AU; %#ok<GVMIS>
+            tf = (conicArc.r_min < 0.05 * AU);
         end
 
         % draw
