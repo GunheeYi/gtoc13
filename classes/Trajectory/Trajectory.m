@@ -73,6 +73,10 @@ classdef Trajectory
             trajectory = Trajectory_load(varargin{:});
         end
 
+        function trajectory = importSolution(~, filename)
+            trajectory = Trajectory_importSolution(filename);
+        end
+
         function exportAsSolution(trajectory, filename)
             Trajectory_exportAsSolution(trajectory, filename);
         end

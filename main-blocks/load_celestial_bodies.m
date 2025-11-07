@@ -2,6 +2,10 @@ function load_celestial_bodies()
     load_planets();
     load_asteroids();
     load_comets();
+
+    global planets asteroids comets celestialBodies; %#ok<GVMIS>
+    celestialBodies = [num2cell(planets); num2cell(asteroids); num2cell(comets)];
+
     make_celestialBody_placeholder();
 
     % disp_loaded_celestial_bodies();
