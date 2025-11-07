@@ -20,7 +20,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(t
 end
 
 function [r_multiple_p_flyby, angle_flyby, dt] = search_whole_timespan(trajectory, target, dt_min, dt_max)
-    global mu_altaira day_in_secs tol_v; %#ok<GVMIS>
+    global mu_altaira day_in_secs tol_dv; %#ok<GVMIS>
 
     R_sc = trajectory.R_end;
 
@@ -58,7 +58,7 @@ function [r_multiple_p_flyby, angle_flyby, dt] = search_whole_timespan(trajector
         fprintf('r_p = %3.2fradii, ang = %7.2f deg, dt = %7.2fd, ||V_out - V1+|| = %.4gkm/s\n', ...
             x(1), rad2deg(x(2)), dt/day_in_secs, dv_res_out);
 
-        if flag > 0 && dv_res_out < tol_v
+        if flag > 0 && dv_res_out < tol_dv
             r_multiple_p_flyby = x(1);
             angle_flyby = x(2);
             return;

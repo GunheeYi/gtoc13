@@ -4,7 +4,7 @@ function set_constants()
         AU TU ...
         day_in_secs year_in_secs t_max...
         sc ...
-        tol_t tol_r tol_v ...
+        tol_dt tol_dr tol_dv ...
         trajectory_path_default; %#ok<GVMIS>
 
     mu_altaira = 139348062043.343;
@@ -25,9 +25,9 @@ function set_constants()
     sail.a_at_1AU = 2 * sail.C_at_1AU * sail.A / sc.m / 1000; % km/s^2
     sc.sail = sail;
 
-    tol_t = 1e-6; % 1ms
-    tol_r = 100e-3; % 100m
-    tol_v = 0.1e-6; % 0.1mm/s
+    tol_dt = 1e-6; % 1ms
+    tol_dr = 100e-3; % 100m
+    tol_dv = 0.1e-6; % 0.1mm/s
 
     trajectory_path_default = 'trajectories/default.mat';
 end

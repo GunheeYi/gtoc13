@@ -19,17 +19,17 @@ function validateContinuity(arc1, arc2)
     % TODO: replace to comparison by reporting digits 
     % instead of absolute tolerances?
 
-    global tol_t tol_r tol_v; %#ok<GVMIS>
+    global tol_dt tol_dr tol_dv; %#ok<GVMIS>
 
-    if abs(arc1.t_end - arc2.t_start) > tol_t
+    if abs(arc1.t_end - arc2.t_start) > tol_dt
         error('Time discontinuity between arcs.');
     end
 
-    if norm(arc1.R_end - arc2.R_start) > tol_r
+    if norm(arc1.R_end - arc2.R_start) > tol_dr
         error('Position discontinuity between arcs.');
     end
 
-    if norm(arc1.V_end - arc2.V_start) > tol_v
+    if norm(arc1.V_end - arc2.V_start) > tol_dv
         error('Velocity discontinuity between arcs.');
     end
 end

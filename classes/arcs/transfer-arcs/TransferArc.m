@@ -78,8 +78,8 @@ classdef (Abstract) TransferArc < Arc
             arguments
                 transferArc TransferArc;
             end
-            global tol_r; %#ok<GVMIS>
-            tf = transferArc.dr_res <= tol_r;
+            global tol_dr; %#ok<GVMIS>
+            tf = transferArc.dr_res <= tol_dr;
         end
     end
 
