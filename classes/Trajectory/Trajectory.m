@@ -72,7 +72,7 @@ classdef Trajectory
                 dt_max {mustBeNonnegative};
                 % min/maximum time after flyby to rendezvous with target [s]
                 % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
-                use_sails logical = true;
+                use_sails logical = false;
                 allow_low_pass logical = false; % under 0.05AU
             end
             trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass);

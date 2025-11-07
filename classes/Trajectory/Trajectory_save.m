@@ -10,11 +10,16 @@ function Trajectory_save(trajectory, varargin)
         filepath = trajectory_path_default;
     else
         filename = varargin{1};
-        folder = "trajectories";
-        if ~exist(folder, "dir")
-            mkdir(folder);
+        folder_base = "trajectories";
+
+        filepath = fullfile(folder_base, filename);
+
+        dirpath = fileparts(filepath);
+
+        if ~exist(dirpath, "dir")
+            mkdir(dirpath);
         end
-        filepath = fullfile(folder, filename);
     end
+
     save(filepath, 'trajectory');
 end
