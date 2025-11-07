@@ -74,6 +74,13 @@ classdef (Abstract) TransferArc
         function dr_res = get.dr_res(transferArc)
             dr_res = norm(transferArc.dR_res);
         end
+        function tf = hitsTarget(transferArc)
+            arguments
+                transferArc TransferArc;
+            end
+            global tol_r; %#ok<GVMIS>
+            tf = transferArc.dr_res <= tol_r;
+        end
     end
 
     methods (Abstract)

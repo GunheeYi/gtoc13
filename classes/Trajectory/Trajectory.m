@@ -7,6 +7,7 @@ classdef Trajectory
         t_end;
         R_end;
         n_flybys;
+        n_flybys_possible; % `n_flyby` + (last conic arc converges to target) ? 1 : 0 
     end
     methods
         function trajectory = Trajectory()
@@ -36,6 +37,19 @@ classdef Trajectory
                 if isa(trajectory.arcs{i}, 'FlybyArc')
                     n_flybys = n_flybys + 1;
                 end
+            end
+        end
+
+        function n_flybys_possible = get.n_flybys_possible(trajectory)
+            try 
+                trajectory.arc_last;
+            catch
+                n_flybys_possible = 0;
+                return;
+            end
+            n_flybys_possible = trajectory.n_flybys;
+            if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
+                n_flybys_possible = n_flybys_possible + 1;
             end
         end
 

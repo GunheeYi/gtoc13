@@ -1,12 +1,12 @@
 function trajectory = Trajectory_addArc(trajectory, arc_new);
     arguments
         trajectory Trajectory;
-        arc_new {mustBeA(arc_new,["ConicArc","PropagatedArc","FlybyArc"])};
+        arc_new { mustBeA(arc_new, ["TransferArc", "FlybyArc"]) };
     end
 
     if isempty(trajectory.arcs)
-        if ~isa(arc_new, "ConicArc") && ~isa(arc_new, "PropagatedArc")
-            error('The first arc must be heliocentric.');
+        if ~isa(arc_new, "TransferArc")
+            error('The first arc must be a transfer arc.');
         end
     else
         validateContinuity(trajectory.arc_last, arc_new);

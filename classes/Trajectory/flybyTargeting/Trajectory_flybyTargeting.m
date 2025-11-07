@@ -1,5 +1,5 @@
 function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass)
-    global t_max AU tol_r; %#ok<GVMIS>
+    global t_max AU; %#ok<GVMIS>
 
     arc_last = trajectory.arc_last;
 
@@ -18,7 +18,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_low_pass);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) without sail.\n', ...
         target.name, conicArc.dr_res, conicArc.dr_res / AU);
-    if conicArc.dr_res < tol_r
+    if conicArc.hitsTarget()
         trajectory = trajectory.addArc(flybyArc);
         trajectory = trajectory.addArc(conicArc);
         return;
@@ -37,10 +37,11 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     propagatedArc = Trajectory_flybyTargeting_withSails(conicArc, allow_low_pass);
     fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) with sail.\n', ...
         target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);
-    if propagatedArc.dr_res > tol_r
-        error('flybyTargeting(%s) did not converge even when using solar sail.', target.name);
+    if propagatedArc.hitsTarget()
+        trajectory = trajectory.addArc(flybyArc);
+        trajectory = trajectory.addArc(propagatedArc);
+        return;
     end
 
-    trajectory = trajectory.addArc(flybyArc);
-    trajectory = trajectory.addArc(propagatedArc);
+    error('flybyTargeting(%s) did not converge even when using solar sail.', target.name);
 end
