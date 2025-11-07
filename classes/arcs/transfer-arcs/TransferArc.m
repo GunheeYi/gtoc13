@@ -1,4 +1,4 @@
-classdef (Abstract) TransferArc
+classdef (Abstract) TransferArc < Arc
     properties
         t_start {mustBeNonnegative};
         R_start (3,1) {mustBeReal};

@@ -1,4 +1,4 @@
-classdef FlybyArc
+classdef FlybyArc < Arc
     properties
         t {mustBeNonnegative};
         body CelestialBody;
