@@ -12,14 +12,14 @@ function load_celestial_bodies()
 end
 
 function load_planets()
-    global planets; %#ok<GVMIS>
+    global planets n_planets; %#ok<GVMIS>
 
     data = readcell('data/gtoc13_planets.csv');
     data = data(2:end, :);
-    n = size(data, 1);
+    n_planets = size(data, 1);
     planets = Planet.empty(0, 1);
 
-    for i = 1:n
+    for i = 1:n_planets
         id     = data{i, 1};
         name   = string(data{i, 2});
         mu     = data{i, 3};
@@ -30,7 +30,7 @@ function load_planets()
         planets(i, 1) = Planet(id, K0, weight, name, mu, r, flybyable);
     end
 
-    declare_planets_as_global_variables();
+    declare_individual_planets_as_global_variables();
 end
 
 function load_asteroids()
@@ -87,7 +87,7 @@ function disp_loaded_celestial_bodies() %#ok<DEFNU>
     fprintf('Loaded %d comets.\n', length(comets));
 end
 
-function declare_planets_as_global_variables()
+function declare_individual_planets_as_global_variables()
     global planets ...
         vulcan yavin eden hoth ...
         yandi ...
