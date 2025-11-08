@@ -5,14 +5,14 @@
 function propagatedArc = Trajectory_flybyTargeting_withSails(conicArc, allow_low_pass)
     global AU; %#ok<GVMIS>
     fprintf('Refining arc using solar sail propulsion...\n');
-    fprintf('  Initial dr_res = %.0fkm (%.2fAU)\n', conicArc.dr_res, conicArc.dr_res / AU);
+    fprintf('  Initial dr_res = %.2fkm (%.2fAU)\n', conicArc.dr_res, conicArc.dr_res / AU);
     fprintf('  Starting coarse optimization...\n');
     propagatedArc_coarse = refineArcUsingSail_coarse(conicArc, allow_low_pass);
-    fprintf('  Coarse optimization produced dr_res = %.0fkm (%.2fAU)\n', ...
+    fprintf('  Coarse optimization produced dr_res = %.2fkm (%.2fAU)\n', ...
         propagatedArc_coarse.dr_res, propagatedArc_coarse.dr_res / AU);
     fprintf('  Starting precise optimization...\n');
     propagatedArc = refineArcUsingSail_precise(propagatedArc_coarse, allow_low_pass);
-    fprintf('  Precise optimization produced dr_res = %.0fkm (%.2fAU)\n', ...
+    fprintf('  Precise optimization produced dr_res = %.2fkm (%.2fAU)\n', ...
         propagatedArc.dr_res, propagatedArc.dr_res / AU);
 end
 

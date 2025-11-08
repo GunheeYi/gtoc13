@@ -30,7 +30,10 @@ function search(filepath)
             continue;
         end
 
-        fprintf('Trying flyby to %s as %dth flyby...\n', planet.name, trajectory.n_flybys_possible);
+        fprintf( ...
+            'Trying flyby to %s as %dth flyby (currrent score = %.2f)...\n', ...
+            planet.name, trajectory.n_flybys_possible, trajectory.score ...
+        );
 
         dirpath_planet = sprintf('%s/%s', dirpath, planet.name);
         filepath_planet_infeasible = sprintf('%s/infeasible', dirpath_planet);
@@ -58,7 +61,10 @@ function search(filepath)
 
         try
             new_trajectory = trajectory.flybyTargeting(planet, 0, dt_max);
-            fprintf('Flyby to %s successful. Saving and continuing search...\n', planet.name);
+            fprintf( ...
+                'Flyby to %s successful (vinf = %.2f). Saving and continuing search...\n', ...
+                planet.name, new_trajectory.arc_last.vinf ...
+            );
             filepath_planet_feasible_splitted = split(filepath_planet_feasible, '/');
             filepath_planet_feasible_for_saving ...
                 = strjoin(filepath_planet_feasible_splitted(2:end), '/');

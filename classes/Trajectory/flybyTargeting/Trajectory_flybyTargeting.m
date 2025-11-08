@@ -16,7 +16,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
     dt_max = min(dt_max, t_max - t_flyby - 1);
 
     [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_low_pass);
-    fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) without sail.\n', ...
+    fprintf('flybyTargeting(%s) produced dr_res = %.2fkm (%.2fAU) without sail.\n', ...
         target.name, conicArc.dr_res, conicArc.dr_res / AU);
     if conicArc.hitsTarget()
         trajectory = trajectory.addArc(flybyArc);
@@ -35,7 +35,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
 
     fprintf('Trying with sails...\n');
     propagatedArc = Trajectory_flybyTargeting_withSails(conicArc, allow_low_pass);
-    fprintf('flybyTargeting(%s) produced dr_res = %.0fkm (%.2fAU) with sail.\n', ...
+    fprintf('flybyTargeting(%s) produced dr_res = %.2fkm (%.2fAU) with sail.\n', ...
         target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);
     if propagatedArc.hitsTarget()
         trajectory = trajectory.addArc(flybyArc);
