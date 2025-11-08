@@ -10,13 +10,21 @@ function search(filepath)
 
     trajectory = Trajectory();
     trajectory = trajectory.load(filepath_for_loading);
+
+    fprintf( ...
+        'Search for %dth flyby requested. Current t = %.2fyrs, score = %.2f.\n', ...
+        trajectory.n_flybys_possible, trajectory.t_end / year_in_secs, trajectory.score ...
+    );
     
     if trajectory.t_end > t_max_for_search
+        fprintf('Maximum time (%dyrs) exceeded. Stopping search.\n', ...
+            t_max_for_search / year_in_secs);
         return;
     end
 
     n_flybys_max = 50;
     if trajectory.n_flybys_possible >= n_flybys_max
+        fprintf('Maximum number of flybys (%d) reached. Stopping search.\n', n_flybys_max);
         return;
     end
 
@@ -31,8 +39,9 @@ function search(filepath)
         end
 
         fprintf( ...
-            'Trying flyby to %s as %dth flyby (currrent score = %.2f)...\n', ...
-            planet.name, trajectory.n_flybys_possible, trajectory.score ...
+            'Trying flyby to %s as %dth flyby (current t = %.2fyrs, score = %.2f)...\n', ...
+            planet.name, trajectory.n_flybys_possible, ...
+            trajectory.t_end / year_in_secs, trajectory.score ...
         );
 
         dirpath_planet = sprintf('%s/%s', dirpath, planet.name);
@@ -70,8 +79,9 @@ function search(filepath)
                 = strjoin(filepath_planet_feasible_splitted(2:end), '/');
             new_trajectory.save(filepath_planet_feasible_for_saving);
             search(filepath_planet_feasible);
-        catch
+        catch ME
             fprintf('Flyby to %s infeasible. Marking and continuing...\n', planet.name);
+            fprintf('  Reason: %s\n', ME.message);
             if ~exist(dirpath_planet, 'dir')
                 mkdir(dirpath_planet);
             end
