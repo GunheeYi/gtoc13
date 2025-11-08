@@ -4,6 +4,8 @@ function rankSearchResults(dirpath)
         dirpath {mustBeTextScalar}
     end
 
+    global year_in_secs;
+
     dirpath = string(dirpath);
     if ~isfolder(dirpath)
         error('rankResults:InvalidDirectory', 'Directory not found: %s', dirpath);
@@ -21,13 +23,14 @@ function rankSearchResults(dirpath)
         return;
     end
 
-    results = repmat(struct('filepath', "", 'score', NaN), nTrajectories, 1);
+    results = repmat(struct('filepath', "", 'score', NaN, 'tEnd', NaN), nTrajectories, 1);
     for iFile = 1:nTrajectories
         filepath = trajectoryFiles(iFile);
         results(iFile).filepath = filepath;
         try
             trajectory = loadTrajectoryFromFullPath(filepath);
             results(iFile).score = trajectory.score;
+            results(iFile).t_end_in_years = trajectory.t_end / year_in_secs;
         catch ME
             warning('rankResults:EvaluationFailed', ...
                 'Failed to evaluate %s: %s', filepath, ME.message);
@@ -47,10 +50,11 @@ function rankSearchResults(dirpath)
     resultsSorted = results(order);
 
     topCount = min(100, numel(resultsSorted));
-    outputLines(end + 1) = sprintf('Top %d trajectories (filepath | score):', topCount);
+    outputLines(end + 1) = sprintf('Top %d trajectories:', topCount);
     for rankIdx = 1:topCount
-        outputLines(end + 1) = sprintf('%3d. (%6.2f) %s', ...
-            rankIdx, scoresSorted(rankIdx), resultsSorted(rankIdx).filepath);
+        outputLines(end + 1) = sprintf('%3d. (t = %.2fyrs, score = %.2f) %s', ...
+            rankIdx, resultsSorted(rankIdx).t_end_in_years, scoresSorted(rankIdx), ...
+            resultsSorted(rankIdx).filepath); %#ok<AGROW>
     end
 
     writeOutput(outputLines, dirpath);
