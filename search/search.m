@@ -91,8 +91,26 @@ function search(filepath)
                     fid = fopen(filepath_planet_infeasible, 'w');
                     fclose(fid);
                 otherwise
-                    rethrow(ME);
+                    logError(trajectory, planet, ME, dirpath);
             end
         end
     end
+end
+
+function logError(trajectory, planet, ME, dirpath)
+    % get root directory path. dirpath always starts with trajectory/
+    % if dirpath is trajectory/dir1/dir2/..., search root dir is defined to be dir1.
+    dirpath_splitted = split(dirpath, '/');
+    dirpath_search_root = strjoin(dirpath_splitted(1:2), '/');
+    filepath_log = sprintf('%s/log.txt', dirpath_search_root);
+
+    fid = fopen(filepath_log, 'a');
+    if fid == -1
+        warning('Could not open log file at %s to log error: %s', filepath_log, ME.message);
+        return;
+    end
+    cleanup_fid = onCleanup(@() fclose(fid));
+    fprintf(fid, '%s\n', trajectory.sequenceString);
+    fprintf(fid, '    Unknown error occurred while attempting flyby targeting %s:\n', planet.name);
+    fprintf(fid, '    %s\n', ME.message);
 end
