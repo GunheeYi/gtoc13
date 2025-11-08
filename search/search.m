@@ -1,6 +1,6 @@
 function search(filepath)
     global year_in_secs mu_altaira ...
-        vulcan yavin eden hoth beyonce bespin ...
+        vulcan yavin eden hoth beyonce bespin jotunn wakonyingo...
     ; %#ok<GVMIS>
 
     t_max_for_search = 130 * year_in_secs;
@@ -23,8 +23,8 @@ function search(filepath)
     dirpath = split(filepath, '/');
     dirpath = strjoin(dirpath(1:end-1), '/');
 
-    targets_flyby = [vulcan, yavin, eden, hoth, beyonce, bespin];
-    targets_flyby = targets_flyby(randperm(length(targets_flyby))); % randomize order
+    targets_flyby = [wakonyingo, jotunn, bespin, beyonce, hoth, eden, yavin, vulcan];
+    % targets_flyby = targets_flyby(randperm(length(targets_flyby))); % randomize order
     for planet = targets_flyby
         if trajectory.arc_last.target.id == planet.id
             continue;
