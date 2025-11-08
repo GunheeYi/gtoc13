@@ -70,9 +70,10 @@ function search(filepath)
 
         try
             new_trajectory = trajectory.flybyTargeting(planet, 0, dt_max);
+            flybyArc_last = new_trajectory.arcs{end-1};
             fprintf( ...
                 'Flyby to %s successful (vinf = %.2f). Saving and continuing search...\n', ...
-                planet.name, new_trajectory.arc_last.vinf ...
+                planet.name, flybyArc_last.vinf ...
             );
             filepath_planet_feasible_splitted = split(filepath_planet_feasible, '/');
             filepath_planet_feasible_for_saving ...
@@ -80,13 +81,18 @@ function search(filepath)
             new_trajectory.save(filepath_planet_feasible_for_saving);
             search(filepath_planet_feasible);
         catch ME
-            fprintf('Flyby to %s infeasible. Marking and continuing...\n', planet.name);
-            fprintf('  Reason: %s\n', ME.message);
-            if ~exist(dirpath_planet, 'dir')
-                mkdir(dirpath_planet);
+            switch ME.identifier
+                case 'Trajectory:flybyTargeting:noConvergenceWithoutSails'
+                    fprintf('Flyby to %s infeasible. Marking and continuing...\n', ...
+                        planet.name);
+                    if ~exist(dirpath_planet, 'dir')
+                        mkdir(dirpath_planet);
+                    end
+                    fid = fopen(filepath_planet_infeasible, 'w');
+                    fclose(fid);
+                otherwise
+                    rethrow(ME);
             end
-            fid = fopen(filepath_planet_infeasible, 'w');
-            fclose(fid);
         end
     end
 end

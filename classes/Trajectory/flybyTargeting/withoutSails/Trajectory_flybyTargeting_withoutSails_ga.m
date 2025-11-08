@@ -62,11 +62,11 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
     % rng(1); 
     x0 = ga(@calc_weighted_sum_of_dr_and_dt, 3, [],[],[],[], lb, ub, [], ga_opts);
     [x, ~, ~, exitflag, ~] = lsqnonlin(@calc_dR_res, x0, lb, ub, opts_lsq);
-    if exitflag <= 0
-        % uncomment below to visualize last valid trajectory
-        % trajectory.draw();
-        error('flybyTargeting_ga failed to converge.');
-    end
+    % if exitflag <= 0
+    %     % uncomment below to visualize last valid trajectory
+    %     % trajectory.draw();
+    %     error('flybyTargeting_ga failed to converge.');
+    % end
 
     [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
 end
