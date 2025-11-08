@@ -10,6 +10,7 @@ classdef Trajectory
         flybyArcs;
         n_flybys;
         n_flybys_possible; % `n_flyby` + (last conic arc converges to target) ? 1 : 0 
+        sequenceString; % e.g., "PlanetX-Rogue 1-Jotunn"
         score;
     end
     methods
@@ -52,10 +53,6 @@ classdef Trajectory
             n_flybys = length(trajectory.flybyArcs);
         end
 
-        function score = get.score(trajectory)
-            score = Trajectory_computeScore(trajectory);
-        end
-
         function n_flybys_possible = get.n_flybys_possible(trajectory)
             if isempty(trajectory.arcs)
                 n_flybys_possible = 0;
@@ -65,6 +62,23 @@ classdef Trajectory
             if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
                 n_flybys_possible = n_flybys_possible + 1;
             end
+        end
+
+        function sequenceString = get.sequenceString(trajectory)
+            sequenceString = '';
+            for i_flybyArc = 1:trajectory.n_flybys
+                flybyArc = trajectory.flybyArcs(i_flybyArc);
+                name = flybyArc.body.name;
+                if isempty(sequenceString)
+                    sequenceString = sprintf('%s', name);
+                else
+                    sequenceString = sprintf('%s-%s', sequenceString, name);
+                end
+            end
+        end
+
+        function score = get.score(trajectory)
+            score = Trajectory_computeScore(trajectory);
         end
 
         function trajectory = addArc(trajectory, arc_new)
