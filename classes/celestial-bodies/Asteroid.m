@@ -4,4 +4,10 @@ classdef Asteroid < CelestialBody
             asteroid@CelestialBody(id, K0, weight);
         end
     end
+
+    methods (Access = protected)
+        function name = get_name(asteroid)
+            name = sprintf('A%d', asteroid.id);
+        end
+    end
 end

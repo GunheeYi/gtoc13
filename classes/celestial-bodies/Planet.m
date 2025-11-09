@@ -1,9 +1,10 @@
 classdef Planet < CelestialBody
     properties
-        name string;
+        name_ string; % underscore to avoid conflict with dependent property already defined in `CelestialBody`
         mu {mustBeNonnegative};
         r {mustBeNonnegative};
     end
+
     methods
         function planet = Planet(id, K0, weight, name, mu, r, flybyable)
             arguments
@@ -16,7 +17,7 @@ classdef Planet < CelestialBody
                 flybyable logical;
             end
             planet@CelestialBody(id, K0, weight);
-            planet.name = name;
+            planet.name_ = name;
             planet.mu = mu;
             planet.r = r;
             planet.flybyable = flybyable;
@@ -45,6 +46,12 @@ classdef Planet < CelestialBody
 
             turn_angle_min = planet.calc_turn_angle(vinf, planet.r * 101);
             turn_angle_max = planet.calc_turn_angle(vinf, planet.r * 1.01);
+        end
+    end
+
+    methods (Access = protected)
+        function name = get_name(planet)
+            name = planet.name_;
         end
     end
 end

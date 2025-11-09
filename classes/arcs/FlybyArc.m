@@ -1,7 +1,7 @@
 classdef FlybyArc < Arc
     properties
         t {mustBeNonnegative};
-        body CelestialBody;
+        body;
         R_sc (3,1) {mustBeReal}; 
             % Position of spacecraft at flyby time.
             % Storing this separately because no matter how deliberately the propagation is done,
@@ -27,7 +27,7 @@ classdef FlybyArc < Arc
         function flybyArc = FlybyArc(t, body, R_sc, V_in, V_out)
             arguments
                 t {mustBeNonnegative};
-                body CelestialBody;
+                body {mustBeA(body, 'CelestialBody')};
                 R_sc (3,1) {mustBeReal};
                 V_in (3,1) {mustBeReal};
                 V_out (3,1) {mustBeReal};

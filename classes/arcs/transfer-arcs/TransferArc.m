@@ -4,7 +4,7 @@ classdef (Abstract) TransferArc < Arc
         R_start (3,1) {mustBeReal};
         V_start (3,1) {mustBeReal};
         t_end {mustBeNonnegative};
-        target CelestialBody;
+        target;
     end
     properties (Dependent)
         S_start (6,1) {mustBeReal};
@@ -24,7 +24,7 @@ classdef (Abstract) TransferArc < Arc
                 R_start (3,1) {mustBeReal};
                 V_start (3,1) {mustBeReal};
                 t_end {mustBeNonnegative};
-                target CelestialBody = CelestialBody.empty;
+                target {mustBeA(target, 'CelestialBody')};
             end
 
             global t_max; %#ok<GVMIS>

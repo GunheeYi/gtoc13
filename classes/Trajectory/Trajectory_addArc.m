@@ -1,4 +1,4 @@
-function trajectory = Trajectory_addArc(trajectory, arc_new);
+function trajectory = Trajectory_addArc(trajectory, arc_new)
     arguments
         trajectory Trajectory;
         arc_new { mustBeA(arc_new, 'Arc') };

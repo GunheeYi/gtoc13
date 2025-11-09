@@ -1,13 +1,16 @@
-classdef CelestialBody
+classdef (Abstract) CelestialBody
     properties
         id {mustBePositive, mustBeInteger};
         K0 (6,1) {mustBeReal}; % initial Keplerian orbital elements
         weight {mustBePositive}; % for exploration
         flybyable logical = false;
     end
+
     properties (Dependent)
-        T; % orbital period 
+        name;
+        T; % orbital period
     end
+
     methods
         function celestialBody = CelestialBody(id, K0, weight)
             arguments
@@ -18,6 +21,10 @@ classdef CelestialBody
             celestialBody.id = id;
             celestialBody.K0 = K0;
             celestialBody.weight = weight;
+        end
+
+        function name = get.name(celestialBody)
+            name = get_name(celestialBody);
         end
 
         function T = get.T(celestialBody)
@@ -102,6 +109,10 @@ classdef CelestialBody
                 plot3mat(Ss(1:3, :) / AU, drawingOptions_orbit{:});
             end
         end
+    end
+
+    methods (Abstract, Access = protected)
+        name = get_name(celestialBody)
     end
 end
 
