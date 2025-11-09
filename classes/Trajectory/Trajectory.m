@@ -78,6 +78,7 @@ classdef Trajectory
         end
 
         function sequenceString = get.sequenceString(trajectory)
+            trajectory = trajectory.appendFinalFlybyIfPossible();
             sequenceString = '';
             for i_flybyArc = 1:trajectory.n_flybys
                 flybyArc = trajectory.flybyArcs(i_flybyArc);
