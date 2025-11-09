@@ -59,7 +59,7 @@ function search(filepath)
         end
 
         a_sc = trajectory.arc_last.K_end(1);
-        e_sc = trajectory.arc_last.K_end(1);
+        e_sc = trajectory.arc_last.K_end(2);
         if e_sc < 1
             T_sc = 2*pi*sqrt(a_sc^3/mu_altaira);
         else
