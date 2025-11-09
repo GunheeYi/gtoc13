@@ -1,3 +1,4 @@
+clear;
 prepare();
 
 %% design trajectory
