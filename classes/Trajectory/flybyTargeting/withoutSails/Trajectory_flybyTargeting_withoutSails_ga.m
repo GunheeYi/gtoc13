@@ -1,6 +1,6 @@
 % Method using `ga` and `lsqnonlin` without sailing, by Jaewoo.
 % Refactored into the framework by Gunhee.
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max, allow_low_pass)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass)
     arguments
         trajectory Trajectory;
         target CelestialBody;
@@ -8,6 +8,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
         dt_max {mustBeNonnegative};
         % min/maximum time after flyby to rendezvous with target [s]
         % set to 0 for no limit (hard lmit: 0 ~ (t_max - t_flyby - 1))
+        allow_retrograde logical = false;
         allow_low_pass logical = false; % under 0.05AU
     end
 
@@ -24,6 +25,9 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
             return;
         end
         if ~allow_low_pass && conicArc.passes_low()
+            return;
+        end
+        if ~allow_retrograde && ~conicArc.isPrograde
             return;
         end
         dR_res = conicArc.dR_res;

@@ -1,16 +1,16 @@
-function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_low_pass)
+function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass)
     body_current = trajectory.arc_last.target;
     if ~body_current.flybyable
         fprintf('Current body (%s) is not flybyable. Making continuing arcs without targeting.\n', body_current.name);
-        [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max, allow_low_pass);
+        [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max);
         return;
     end
 
-    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max, allow_low_pass); % by Jaewoo
-    % [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max, allow_low_pass); % by Jinsung
+    [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass); % by Jaewoo
+    % [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass); % by Jinsung
 end
 
-function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max, allow_low_pass)
+function [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max)
     % Make continuing arcs that just passes through the last body,
     % without performing any flyby maneuver.
     % `conicArc` is set to minimize residual position error from target at the end.

@@ -13,6 +13,7 @@ classdef (Abstract) TransferArc < Arc
         K_end (6,1) {mustBeReal};
         R_end (3,1) {mustBeReal};
         V_end (3,1) {mustBeReal};
+        isPrograde {mustBeNumericOrLogical}; % at end
         dR_res (3,1) {mustBeReal}; % residual distance between 
                                    % propagated and target position at end
         dr_res (3,1) {mustBeReal};
@@ -65,6 +66,11 @@ classdef (Abstract) TransferArc < Arc
         end
         function V_end = get.V_end(transferArc)
             V_end = transferArc.S_end(4:6);
+        end
+
+        function tf = get.isPrograde(transferArc)
+            h_vec = cross(transferArc.R_end, transferArc.V_end);
+            tf = (h_vec(3) >= 0);
         end
 
         function dR_res = get.dR_res(transferArc)
