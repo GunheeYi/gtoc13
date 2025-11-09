@@ -1,5 +1,5 @@
 %% setup
-close all; clear; clc;
+close all; clc;
 format longg;
 % format compact
 
