@@ -126,8 +126,12 @@ classdef Trajectory
         end
 
         % draw a static plot of the trajectory
-        function draw(trajectory)
-            Trajectory_draw(trajectory);
+        function draw(trajectory, drawProjectedArc)
+            arguments
+                trajectory Trajectory;
+                drawProjectedArc logical = true;
+            end
+            Trajectory_draw(trajectory, drawProjectedArc);
         end
 
         function brief(trajectory)

@@ -1,6 +1,7 @@
-function Trajectory_draw(trajectory)
+function Trajectory_draw(trajectory, drawProjectedArc)
     arguments
         trajectory Trajectory;
+        drawProjectedArc logical;
     end
 
     global t_max celestialBody_placeholder; %#ok<GVMIS>
@@ -19,12 +20,14 @@ function Trajectory_draw(trajectory)
         arc.draw('-');
     end
 
-    arc_last = trajectory.arc_last;
-    conicArc_projected = ConicArc( ...
-        trajectory.t_end, arc_last.R_end, arc_last.V_end, t_max, ...
-        celestialBody_placeholder ...
-    );
-    conicArc_projected.draw('--', 'DisplayName', 'conic arc, projected');
+    if drawProjectedArc
+        arc_last = trajectory.arc_last;
+        conicArc_projected = ConicArc( ...
+            trajectory.t_end, arc_last.R_end, arc_last.V_end, t_max, ...
+            celestialBody_placeholder ...
+        );
+        conicArc_projected.draw('--', 'DisplayName', 'conic arc, projected');
+    end
 
     axis equal;
     grid on;
