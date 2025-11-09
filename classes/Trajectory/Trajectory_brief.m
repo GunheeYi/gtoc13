@@ -12,14 +12,15 @@ function Trajectory_brief(trajectory)
     global year_in_secs day_in_secs; %#ok<GVMIS>
 
     fprintf('[[Trajectory Briefing]]\n\n');
-
     fprintf('[Overview]\n');
+
+    fprintf('score = %.2f\n', trajectory.score);
 
     sequenceString = char(trajectory.sequenceString);
     if isempty(sequenceString)
         sequenceString = '(none)';
     end
-    fprintf('full sequence: %s\n', sequenceString);
+    fprintf('visiting order: %s\n', sequenceString);
 
     t_start_years = trajectory.t_start / year_in_secs;
     t_start_days = trajectory.t_start / day_in_secs;
@@ -28,11 +29,12 @@ function Trajectory_brief(trajectory)
     fprintf('Vx = %.10fkm/s\n', trajectory.V_start(1));
 
     fprintf('\n');
+    fprintf('[Sequence]\n');
 
     for i = 1:numel(trajectory.arcs)
         arc = trajectory.arcs{i};
         arcSummary = describeArc(arc, year_in_secs, day_in_secs);
-        fprintf('[seq%d] %s\n', i, arcSummary);
+        fprintf('(seq%02d) %s\n', i, arcSummary);
     end
 end
 
