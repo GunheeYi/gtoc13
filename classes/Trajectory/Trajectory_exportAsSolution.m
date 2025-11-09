@@ -4,18 +4,11 @@ function Trajectory_exportAsSolution(trajectory, filename)
         filename {mustBeTextScalar};
     end
 
-    global celestialBody_placeholder; %#ok<GVMIS>
-
     if isempty(trajectory.arcs)
         error("Trajectory has no arcs to export.");
     end
 
-    arc_last = trajectory.arc_last;
-    if isa(arc_last, 'TransferArc') && arc_last.hitsTarget()
-        [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory, ...
-            2, 0, 1, celestialBody_placeholder);
-        trajectory = trajectory.addArc(flybyArc);
-    end
+    trajectory = trajectory.appendFinalFlybyIfPossible();
 
     s = "";
 

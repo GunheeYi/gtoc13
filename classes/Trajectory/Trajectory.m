@@ -4,6 +4,9 @@ classdef Trajectory
     end
     properties (Dependent)
         arc_last;
+        t_start;
+        R_start;
+        V_start;
         t_end;
         R_end;
         n_arcs;
@@ -26,6 +29,16 @@ classdef Trajectory
         function arc_last = get.arc_last(trajectory)
             trajectory.raiseErrorIfNoArc();
             arc_last = trajectory.arcs{end};
+        end
+
+        function t_start = get.t_start(trajectory)
+            t_start = trajectory.arcs{1}.t_start;
+        end
+        function R_start = get.R_start(trajectory)
+            R_start = trajectory.arcs{1}.R_start;
+        end
+        function V_start = get.V_start(trajectory)
+            V_start = trajectory.arcs{1}.V_start;
         end
 
         function t_end = get.t_end(trajectory)
@@ -103,9 +116,22 @@ classdef Trajectory
             trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_low_pass);
         end
 
+        function trajectory = appendFinalFlybyIfPossible(trajectory)
+            global celestialBody_placeholder; %#ok<GVMIS>
+            if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
+                [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory, ...
+                    2, 0, 1, celestialBody_placeholder);
+                trajectory = trajectory.addArc(flybyArc);
+            end
+        end
+
         % draw a static plot of the trajectory
         function draw(trajectory)
             Trajectory_draw(trajectory);
+        end
+
+        function brief(trajectory)
+            Trajectory_brief(trajectory);
         end
 
         % draw an interactive figure of the trajectory (by Mercury)

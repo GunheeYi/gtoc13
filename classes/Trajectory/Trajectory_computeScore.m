@@ -55,10 +55,6 @@ function m = make_flybyArcsMap_byBodyIds(trajectory)
     end
 end
 
-function F = calc_F(vinf)
-    F = 0.2 + exp(-vinf/13) / ( 1 + exp(-5 * (vinf-1.5)) );
-end
-
 function b = calc_b(bodyIds)
     global n_planets; %#ok<GVMIS>
 
