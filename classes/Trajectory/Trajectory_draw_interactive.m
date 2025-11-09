@@ -9,6 +9,6 @@ function fig = Trajectory_draw_interactive(trajectory, dt)
 
     filename = 'temp-for-interactive-map.txt';
     filepath = "solutions/" + filename;
-    Trajectory_exportAsSolution(trajectory, filename);
+    Trajectory_exportAsSolution(trajectory, filename, false);
     fig = plotSystem(filepath, dt);
 end

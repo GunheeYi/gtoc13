@@ -161,8 +161,8 @@ classdef Trajectory
             trajectory = Trajectory_importSolution(filename);
         end
 
-        function exportAsSolution(trajectory, filename)
-            Trajectory_exportAsSolution(trajectory, filename);
+        function exportAsSolution(trajectory, filename, wrapUp)
+            Trajectory_exportAsSolution(trajectory, filename, wrapUp);
         end
 
         % TODO: implement grading
