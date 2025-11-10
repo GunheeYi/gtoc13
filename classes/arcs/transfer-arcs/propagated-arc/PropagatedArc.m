@@ -5,6 +5,7 @@ classdef PropagatedArc < TransferArc
     end
     properties (Dependent)
         n_controls {mustBePositive};
+        segments; % cells that each contain an array (6xN) of cartesian states (6x1)
     end
     methods
         function propagatedArc = PropagatedArc(t_start, R_start, V_start, t_end, target)
@@ -46,15 +47,29 @@ classdef PropagatedArc < TransferArc
                 PropagatedArc_splitControls_tail(propagatedArc, n_controls_tail);
         end
 
+        function Ss = get.segments(propagatedArc)
+            Ss = PropagatedArc_get_segments(propagatedArc);
+        end
+
         function draw(propagatedArc, varargin)
             arguments
-                propagatedArc PropagatedArc; %#ok<INUSA>
+                propagatedArc PropagatedArc;
             end
             arguments (Repeating)
                 varargin;
             end
-            % TODO: implement
-            error('Not yet implemented.');
+
+            global AU; %#ok<GVMIS>
+
+            for i_segment = 1:numel(propagatedArc.segments)
+                Ss = propagatedArc.segments{i_segment};
+                Rs = Ss(1:3, :);
+                plot3mat( ...
+                    Rs / AU, varargin{1}, ...
+                    'DisplayName', sprintf('prop arc to %s (%d)', propagatedArc.target.name, i_segment), ...
+                    varargin{2:end} ...
+                );
+            end
         end
 
         function solutionRows = to_solutionRows(propagatedArc)
@@ -71,7 +86,8 @@ classdef PropagatedArc < TransferArc
         end
 
         function S_end = get_S_end(propagatedArc)
-            S_end = PropagatedArc_get_S_end(propagatedArc);
+            Ss = propagatedArc.segments{end};
+            S_end = Ss(:, end);
         end
 
         function K_end = get_K_end(propagatedArc)

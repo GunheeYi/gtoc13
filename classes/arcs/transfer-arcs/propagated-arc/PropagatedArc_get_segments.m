@@ -1,17 +1,15 @@
-function S_end = PropagatedArc_get_S_end(propagatedArc)
-    n_controls = length(propagatedArc.controls);
+function segments = PropagatedArc_get_segments(propagatedArc)
+    segments = cell(1, propagatedArc.n_controls);
     S = propagatedArc.S_start;
-    Ss = nan(6, n_controls+1);
-    Ss(:, 1) = S;
-    for i = 1:n_controls
+    for i = 1:propagatedArc.n_controls
         control = propagatedArc.controls(i);
-        S = propagate_with_constant_control(S, control);
-        Ss(:, i+1) = S;
+        Ss = propagate_with_constant_control(S, control);
+        segments{i} = Ss;
+        S = Ss(:, end);
     end
-    S_end = Ss(:, end);
 end
 
-function S_end = propagate_with_constant_control(S_start, control)
+function Ss = propagate_with_constant_control(S_start, control)
     function dSdt = odefun(S)
         global AU mu_altaira sc; %#ok<GVMIS>
 
@@ -31,11 +29,12 @@ function S_end = propagate_with_constant_control(S_start, control)
     end
 
     tspan = [0 control.dt_scaled];
-    options = odeset('RelTol', 1e-8, 'AbsTol', 1e-10, 'MinStep', 1e-10);
+    options = odeset('RelTol', 1e-3, 'AbsTol', 1000, 'MinStep', 1e-10);
     warning('error', 'MATLAB:ode15s:IntegrationTolNotMet');
-    [~, Ss] = ode15s(@(~, S) odefun(S), tspan, S_start, options);
+    [~, Ss] = ode45(@(~, S) odefun(S), tspan, S_start, options);
     warning('on', 'MATLAB:ode15s:IntegrationTolNotMet');
-    S_end = Ss(end, :)';
+
+    Ss = Ss';
 end
 
 function [U_x, U_y, U_z] = produce_local_exosun_basis(R, V)
