@@ -13,6 +13,7 @@ classdef (Abstract) TransferArc < Arc
         K_end (6,1) {mustBeReal};
         R_end (3,1) {mustBeReal};
         V_end (3,1) {mustBeReal};
+        T_end {mustBeNonnegative};
         isPrograde {mustBeNumericOrLogical}; % at end
         dR_res (3,1) {mustBeReal}; % residual distance between 
                                    % propagated and target position at end
@@ -66,6 +67,16 @@ classdef (Abstract) TransferArc < Arc
         end
         function V_end = get.V_end(transferArc)
             V_end = transferArc.S_end(4:6);
+        end
+        function T_end = get.T_end(transferArc)
+            global mu_altaira; %#ok<GVMIS>
+            a = transferArc.K_end(1);
+            e = transferArc.K_end(2);
+            if e < 1
+                T_end = 2*pi*sqrt(a^3/mu_altaira);
+            else
+                T_end = Inf;
+            end
         end
 
         function tf = get.isPrograde(transferArc)

@@ -17,8 +17,9 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
     lb = [1.1, -pi, dt_min / TU];
     ub = [101,  pi, dt_max / TU];
 
-    function dR_res = calc_dR_res(x) % position residual
+    function [dR_res, T] = calc_dR_res_and_T(x) % position residual
         dR_res = [nan; nan; nan];
+        T = nan; % orbital period of spacecraft after flyby
         try
             [~, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
         catch % in case of propagation failure or too low pass
@@ -31,20 +32,23 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
             return;
         end
         dR_res = conicArc.dR_res;
+        T = conicArc.T_end;
+    end
+
+    function dR_res = calc_dR_res(x)
+        dR_res = calc_dR_res_and_T(x);
     end
 
     function J = calc_weighted_sum_of_dr_and_dt(x)
-        dR = calc_dR_res(x);
-        dr_in_AU = norm(dR) / AU;
-        dt_in_TU = x(3);
+        [dR, T] = calc_dR_res_and_T(x);
+        dr = norm(dR); % dr_res
+        dt_in_T = x(3) / T; % TODO:think: does it benefit hyperbolic trajectories (T=inf) too much?
 
-        weight_r = 1;
-        weight_t = 1e-3;
+        % effect of 1 rev difference should equal as about 1e5? 1e6? (TODO:think) km difference
+        weight_dr = 1;
+        weight_dt = 1e5;
 
-        J = (weight_r * dr_in_AU)^2 + (weight_t * dt_in_TU)^2;
-        if ~isfinite(J)
-            J = 1e30; 
-        end
+        J = (weight_dr * dr)^2 + (weight_dt * dt_in_T)^2;
     end
 
     ga_opts = optimoptions('ga', ...
