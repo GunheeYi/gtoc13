@@ -3,7 +3,8 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajector
     body_current = trajectory.arc_last.target;
     if ~body_current.flybyable
         fprintf('Current body (%s) is not flybyable. Making continuing arcs without targeting.\n', body_current.name);
-        [flybyArc, conicArc] = makeContinuingArcs(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass);
+        [flybyArc, conicArc] = makeContinuingArcs(trajectory, ...
+            target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass);
         return;
     end
 
