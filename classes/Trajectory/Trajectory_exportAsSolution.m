@@ -1,10 +1,4 @@
 function Trajectory_exportAsSolution(trajectory, filename, wrapUp)
-    arguments
-        trajectory Trajectory;
-        filename {mustBeTextScalar};
-        wrapUp logical = true; % append final flyby if possible
-    end
-
     if isempty(trajectory.arcs)
         error("Trajectory has no arcs to export.");
     end

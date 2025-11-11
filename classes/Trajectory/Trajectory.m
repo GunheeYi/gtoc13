@@ -166,6 +166,11 @@ classdef Trajectory
         end
 
         function exportAsSolution(trajectory, filename, wrapUp)
+            arguments
+                trajectory Trajectory;
+                filename {mustBeTextScalar};
+                wrapUp logical = true; % append final flyby if possible
+            end
             Trajectory_exportAsSolution(trajectory, filename, wrapUp);
         end
 
