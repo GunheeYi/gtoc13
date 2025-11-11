@@ -16,7 +16,8 @@ classdef (Abstract) TransferArc < Arc
         R_end (3,1) {mustBeReal};
         V_end (3,1) {mustBeReal};
         T_end {mustBeNonnegative};
-        isPrograde {mustBeNumericOrLogical}; % at end
+        isProgradeAtEnd {mustBeNumericOrLogical};
+        isMovingOutwardAtEnd {mustBeNumericOrLogical}
         dR_res (3,1) {mustBeReal}; % residual distance between 
                                    % propagated and target position at end
         dr_res (3,1) {mustBeReal};
@@ -69,9 +70,32 @@ classdef (Abstract) TransferArc < Arc
             end
         end
 
-        function tf = get.isPrograde(transferArc)
+        function tf = get.isProgradeAtEnd(transferArc)
             h_vec = cross(transferArc.R_end, transferArc.V_end);
             tf = (h_vec(3) >= 0);
+        end
+        function tf = get.isMovingOutwardAtEnd(transferArc)
+            d = dot(transferArc.R_end, transferArc.V_end);
+            tf = (d > 0);
+        end
+        function tf = satisfiesConditions(transferArc, rendezvousDirection, allow_retrograde, allow_low_pass)
+            tf = false;
+            if ~allow_low_pass && transferArc.passes_low()
+                return;
+            end
+            if ~allow_retrograde && ~transferArc.isProgradeAtEnd
+                return;
+            end
+            if rendezvousDirection > 0 % outward
+                if ~transferArc.isMovingOutwardAtEnd
+                    return;
+                end
+            elseif rendezvousDirection < 0 % inward
+                if transferArc.isMovingOutwardAtEnd
+                    return;
+                end
+            end
+            tf = true;
         end
 
         function dR_res = get.dR_res(transferArc)

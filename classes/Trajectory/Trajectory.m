@@ -9,6 +9,7 @@ classdef Trajectory
         V_start;
         t_end;
         R_end;
+        V_end;
         n_arcs;
         flybyArcs;
         n_flybys;
@@ -46,6 +47,9 @@ classdef Trajectory
         end
         function R_end = get.R_end(trajectory)
             R_end = trajectory.arc_last.R_end;
+        end
+        function R_end = get.V_end(trajectory)
+            R_end = trajectory.arc_last.V_end;
         end
 
         function n_arcs = get.n_arcs(trajectory)
@@ -103,10 +107,11 @@ classdef Trajectory
             trajectory = Trajectory_startByTargeting(trajectory, target, t_start, vx_start);
         end
         
-        function trajectory = flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass)
+        function trajectory = flybyTargeting(trajectory, target, rendezvousDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass)
             arguments
                 trajectory Trajectory;
                 target CelestialBody;
+                rendezvousDirection; % -1: inward / 1: outward / 0: doesn't matter
                 dt_min {mustBeNonnegative};
                 dt_max {mustBeNonnegative};
                 % min/maximum time after flyby to rendezvous with target [s]
@@ -115,14 +120,13 @@ classdef Trajectory
                 allow_retrograde = false;
                 allow_low_pass logical = false; % under 0.05AU
             end
-            trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass);
+            trajectory = Trajectory_flybyTargeting(trajectory, target, rendezvousDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass);
         end
 
         function trajectory = appendFinalFlybyIfPossible(trajectory)
-            global celestialBody_placeholder; %#ok<GVMIS>
             if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
-                [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory.arc_last, ...
-                    2, 0, 1, celestialBody_placeholder);
+                flybyArc = FlybyArc(trajectory.t_end, trajectory.arc_last.target, ...
+                    trajectory.R_end, trajectory.V_end, trajectory.V_end);
                 trajectory = trajectory.addArc(flybyArc);
             end
         end

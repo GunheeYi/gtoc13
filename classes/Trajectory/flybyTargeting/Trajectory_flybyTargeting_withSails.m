@@ -2,36 +2,46 @@
 % Use this when solution `conicArc` produced by other methods without sailing
 % does not target well enough.
 % Refactored into the framework by Gunhee.
-function [flybyArc, propagatedArc] = Trajectory_flybyTargeting_withSails(arc_last, flybyArc, conicArc, allow_retrograde, allow_low_pass)
+function [flybyArc, propagatedArc] = Trajectory_flybyTargeting_withSails(arc_last, ...
+        flybyArc, conicArc, rendezvousDirection, allow_retrograde, allow_low_pass)
     global AU; %#ok<GVMIS>
     fprintf('Refining arc using solar sail...\n');
     fprintf('  Initial dr_res = %.2fkm (%.2fAU)\n', conicArc.dr_res, conicArc.dr_res / AU);
     fprintf('  Starting coarse optimization...\n');
-    [flybyArc, propagatedArc] = refineArcUsingSail_coarse(arc_last, flybyArc, conicArc, allow_retrograde, allow_low_pass);
+    [flybyArc, propagatedArc] = refineArcUsingSail_coarse(arc_last, ...
+        flybyArc, conicArc, rendezvousDirection, allow_retrograde, allow_low_pass);
     fprintf('  Coarse optimization produced dr_res = %.2fkm (%.2fAU)\n', ...
         propagatedArc.dr_res, propagatedArc.dr_res / AU);
     % fprintf('  Starting precise optimization...\n');
-    % [flybyArc, propagatedArc] = refineArcUsingSail_precise(arc_last, flybyArc, propagatedArc, allow_retrograde, allow_low_pass);
+    % [flybyArc, propagatedArc] = refineArcUsingSail_precise(arc_last, ...
+    %     flybyArc, propagatedArc, rendezvousDirection, allow_retrograde, allow_low_pass);
     % fprintf('  Precise optimization produced dr_res = %.2fkm (%.2fAU)\n', ...
     %     propagatedArc.dr_res, propagatedArc.dr_res / AU);
 end
 
-function [flybyArc, propagatedArc] = refineArcUsingSail_coarse(arc_last, flybyArc, conicArc, allow_retrograde, allow_low_pass)
+function [flybyArc, propagatedArc] = refineArcUsingSail_coarse(arc_last, ...
+        flybyArc, conicArc, rendezvousDirection, allow_retrograde, allow_low_pass)
     propagatedArc = PropagatedArc(conicArc);
     
-    [flybyArc, propagatedArc, ~] = refineLastControls(arc_last, flybyArc, propagatedArc, propagatedArc.n_controls, allow_retrograde, allow_low_pass, 1e7);
+    [flybyArc, propagatedArc, ~] = refineLastControls(arc_last, ...
+        flybyArc, propagatedArc, propagatedArc.n_controls, rendezvousDirection, allow_retrograde, allow_low_pass, 1e7);
 end
 
-function [flybyArc, propagatedArc] = refineArcUsingSail_precise(arc_last, flybyArc, propagatedArc_coarse, allow_retrograde, allow_low_pass)
+function [flybyArc, propagatedArc] = refineArcUsingSail_precise(arc_last, ...
+        flybyArc, propagatedArc_coarse, rendezvousDirection, allow_retrograde, allow_low_pass)
     n_controls_tail = 2;
     propagatedArc = propagatedArc_coarse.splitControls_tail(n_controls_tail);
     [flybyArc, propagatedArc, ~] = ...
-        refineLastControls(arc_last, flybyArc, propagatedArc, propagatedArc.n_controls_tail, allow_retrograde, allow_low_pass, 1e3);
+        refineLastControls(arc_last, ...
+            flybyArc, propagatedArc, propagatedArc.n_controls_tail, ...
+            rendezvousDirection, allow_retrograde, allow_low_pass, 1e3);
         % note that `n_controls_tail` ~= `propagatedArc.n_controls_tail`
         % because of the splitting of tail in `splitControls_tail()`
 end
 
-function [flybyArc_new, propagatedArc_new, flag] = refineLastControls(arc_last, flybyArc, propagatedArc, n_controls_last, allow_retrograde, allow_low_pass, FitnessLimit)
+function [flybyArc_new, propagatedArc_new, flag] = refineLastControls(arc_last, ...
+        flybyArc, propagatedArc, n_controls_last, ...
+        rendezvousDirection, allow_retrograde, allow_low_pass, FitnessLimit)
     % decision x = [r_multiple_p_flyby, angle_rotation,
     %               alpha1, beta1, alpha2, beta2, ..., alphaN, betaN,
     %               global_dt_scaling_factor                          ]
@@ -81,7 +91,7 @@ function [flybyArc_new, propagatedArc_new, flag] = refineLastControls(arc_last, 
 
         % TODO: handle low pass
 
-        if ~allow_retrograde && ~propagatedArc_new.isPrograde
+        if ~allow_retrograde && ~propagatedArc_new.isProgradeAtEnd
             return;
         end
 
