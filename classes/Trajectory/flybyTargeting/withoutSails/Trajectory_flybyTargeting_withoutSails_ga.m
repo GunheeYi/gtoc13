@@ -12,7 +12,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
         allow_low_pass logical = false; % under 0.05AU
     end
 
-    global AU TU year_in_secs t_max; %#ok<GVMIS,NUSED>
+    global TU; %#ok<GVMIS>
 
     lb = [1.1, -pi, dt_min / TU];
     ub = [101,  pi, dt_max / TU];
@@ -21,7 +21,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
         dR_res = [nan; nan; nan];
         T = nan; % orbital period of spacecraft after flyby
         try
-            [~, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
+            [~, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory.arc_last, x, target);
         catch % in case of propagation failure or too low pass
             return;
         end
@@ -42,7 +42,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
     function J = calc_weighted_sum_of_dr_and_dt(x)
         [dR, T] = calc_dR_res_and_T(x);
         dr = norm(dR); % dr_res
-        dt_in_T = x(3) / T; % TODO:think: does it benefit hyperbolic trajectories (T=inf) too much?
+        dt_in_T = x(3) * TU / T; % TODO:think: does it benefit hyperbolic trajectories (T=inf) too much?
 
         % effect of 1 rev difference should equal as about 1e5? 1e6? (TODO:think) km difference
         weight_dr = 1;
@@ -54,8 +54,8 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
     ga_opts = optimoptions('ga', ...
         'Display','iter', ...
         'UseParallel', false, ...      % 병렬 가능하면 true
-        'MaxGenerations', 100, ...
-        'PopulationSize', 1000, ...
+        'MaxGenerations', 10, ...
+        'PopulationSize', 2000, ...
         'FunctionTolerance', 1e-4);
 
     opts_lsq = optimoptions('lsqnonlin', ...
@@ -76,15 +76,15 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
     %     error('flybyTargeting_ga failed to converge.');
     % end
 
-    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target);
+    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory.arc_last, x, target);
 end
 
-function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(trajectory, x, target)
+function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry_usingX(arc_last, x, target)
     global TU; %#ok<GVMIS>
 
     r_multiple_p_flyby = x(1);
     angle_flyby = x(2);
     dt = x(3) * TU;
 
-    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, r_multiple_p_flyby, angle_flyby, dt, target);
+    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(arc_last, r_multiple_p_flyby, angle_flyby, dt, target);
 end

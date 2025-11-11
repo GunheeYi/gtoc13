@@ -23,7 +23,7 @@ classdef Planet < CelestialBody
             planet.flybyable = flybyable;
         end
 
-        function turn_angle = calc_turn_angle(planet, vinf, r_p)
+        function angle_turn = calc_angle_turn(planet, vinf, r_p)
             arguments
                 planet Planet;
                 vinf {mustBeNonnegative};
@@ -36,16 +36,16 @@ classdef Planet < CelestialBody
 
             muOverRp = planet.mu / r_p;
             sinValue = muOverRp / (vinf^2 + muOverRp);
-            turn_angle = 2 * asin(sinValue);
+            angle_turn = 2 * asin(sinValue);
         end
-        function [turn_angle_min, turn_angle_max] = calc_feasible_turn_angle_range(planet, vinf)
+        function [angle_turn_min, angle_turn_max] = calc_range_angle_turn_feasible(planet, vinf)
             arguments
                 planet Planet;
                 vinf {mustBeNonnegative};
             end
 
-            turn_angle_min = planet.calc_turn_angle(vinf, planet.r * 101);
-            turn_angle_max = planet.calc_turn_angle(vinf, planet.r * 1.01);
+            angle_turn_min = planet.calc_angle_turn(vinf, planet.r * 101);
+            angle_turn_max = planet.calc_angle_turn(vinf, planet.r * 1.01);
         end
     end
 

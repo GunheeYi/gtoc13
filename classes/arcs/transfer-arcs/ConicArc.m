@@ -5,20 +5,63 @@ classdef ConicArc < TransferArc
     % It follows a conic trajectory around Altaira until time `t_end`.
     % The arc does not necessarily rendezvous with the target body,
     % and the residual position at `t_end` is given by `dR_res`.
+    properties
+        t_end;
+    end
     properties (Dependent)
         r_min % closest approach distance to Altaira
     end
 
     methods
         function conicArc = ConicArc(t_start, R_start, V_start, t_end, target)
-            global AU; %#ok<GVMIS>
+            arguments
+                t_start {mustBeNonnegative};
+                R_start (3,1) {mustBeReal};
+                V_start (3,1) {mustBeReal};
+                t_end;
+                target {mustBeA(target, 'CelestialBody')};
+            end
+
+            global t_max AU; %#ok<GVMIS>
+
+            if t_start >= t_end
+                error('Time must be increasing.');
+            end
+
+            if t_end > t_max
+                error('End time exceeds maximum allowed time.');
+            end
             
-            conicArc@TransferArc(t_start, R_start, V_start, t_end, target);
+            conicArc@TransferArc(t_start, R_start, V_start, target);
+            conicArc.t_end = t_end;
+
             if conicArc.passes_too_low()
                 error('ConicArc:passes_too_low', ...
                     'ConicArc passes too close to Altaira (r_min = %.4fAU).', ...
                     conicArc.r_min / AU);
             end
+        end
+
+        function K = K_at(conicArc, t)
+            global mu_altaira; %#ok<GVMIS>
+            K = KepMotion(conicArc.K_start, t - conicArc.t_start, mu_altaira);
+        end
+        function S = S_at(conicArc, t)
+            global mu_altaira; %#ok<GVMIS>
+            K = conicArc.K_at(t);
+            S = K2S(K, mu_altaira);
+        end
+        function R = R_at(conicArc, t)
+            S = conicArc.S_at(t);
+            R = S(1:3);
+        end
+        function V = V_at(conicArc, t)
+            S = conicArc.S_at(t);
+            V = S(4:6);
+        end
+        function v = v_at(conicArc, t)
+            V = conicArc.V_at(t);
+            v = norm(V);
         end
 
         function r_min = get.r_min(conicArc)
@@ -76,12 +119,10 @@ classdef ConicArc < TransferArc
     end
     methods (Access = protected)
         function K_end = get_K_end(conicArc)
-            global mu_altaira; %#ok<GVMIS>
-            K_end = KepMotion(conicArc.K_start, conicArc.t_end - conicArc.t_start, mu_altaira);
+            K_end = conicArc.K_at(conicArc.t_end);
         end
         function S_end = get_S_end(conicArc)
-            global mu_altaira; %#ok<GVMIS>
-            S_end = K2S(conicArc.K_end, mu_altaira);
+            S_end = conicArc.S_at(conicArc.t_end);
         end
     end
 end

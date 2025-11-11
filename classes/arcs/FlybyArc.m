@@ -16,6 +16,10 @@ classdef FlybyArc < Arc
         Vinf_in
         Vinf_out
         vinf
+        angle_turn
+        r_p
+        r_multiple_p
+        angle_rotation
         t_start
         t_end
         R_start
@@ -60,13 +64,46 @@ classdef FlybyArc < Arc
         function Vinf_in = get.Vinf_in(flybyArc)
             Vinf_in = flybyArc.V_in - flybyArc.V_body;
         end
-
         function Vinf_out = get.Vinf_out(flybyArc)
             Vinf_out = flybyArc.V_out - flybyArc.V_body;
         end
-
         function vinf = get.vinf(flybyArc)
             vinf = norm(flybyArc.Vinf_in);
+        end
+        function angle_turn = get.angle_turn(flybyArc)
+            Vinf_in_normed = normed(flybyArc.Vinf_in);
+            Vinf_out_normed = normed(flybyArc.Vinf_out);
+            angle_turn = acos(dot(Vinf_in_normed, Vinf_out_normed));
+        end
+        function r_p = get.r_p(flybyArc)
+            sinAngleTurnHalf = sin(flybyArc.angle_turn / 2);
+            muOverRp = sinAngleTurnHalf * flybyArc.vinf^2 / (1 - sinAngleTurnHalf);
+            r_p = flybyArc.body.mu / muOverRp;
+        end
+        function r_multiple_p = get.r_multiple_p(flybyArc)
+            r_multiple_p = flybyArc.r_p / flybyArc.body.r;
+        end
+        function angle_rotation = get.angle_rotation(flybyArc)
+            Vinf_in_normed = normed(flybyArc.Vinf_in);
+            Vinf_in_perp_normed = normed( cross( Vinf_in_normed, [0;0;1] ) );
+            Vinf_out_standard_normed = normed( ...
+                cos(flybyArc.angle_turn)*Vinf_in_normed + sin(flybyArc.angle_turn)*Vinf_in_perp_normed ...
+            );
+            Vinf_out_normed = normed(flybyArc.Vinf_out);
+
+            Vinf_out_normed_projected = dot(Vinf_out_normed, Vinf_in_normed) * Vinf_in_normed;
+            % ^ projection to `Vinf_in`, i.e. component of `Vinf_out_normed` parallel to `Vinf_in`;
+            % should be the same with `Vinf_out_standard_normed_projected`
+            % `Vinf_out_standard_normed_projected = dot(Vinf_out_standard_normed, Vinf_in_normed) * Vinf_in_normed;`
+            % (because `Vinf_out_normed` is mere a rotation of `Vinf_out_standard_normed` around axis `Vinf_in`)
+            Vinf_out_normed_perp = Vinf_out_normed - Vinf_out_normed_projected;
+            Vinf_out_standard_normed_perp = Vinf_out_standard_normed - Vinf_out_normed_projected;
+
+            angle_rotation = acos(dot(normed(Vinf_out_standard_normed_perp), normed(Vinf_out_normed_perp)));
+            c = cross(Vinf_out_standard_normed_perp, Vinf_out_normed_perp);
+            if dot(Vinf_in_normed, c) < 0
+                angle_rotation = - angle_rotation;
+            end
         end
 
         function t_start = get.t_start(flybyArc)

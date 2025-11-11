@@ -27,7 +27,7 @@ function [r_multiple_p_flyby, angle_flyby, dt] = search_whole_timespan(trajector
     R_sc = trajectory.R_end;
 
     function dv_out = fun(x, dt) % ||V_out_flyby - V_out_lambert||
-        [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory, x(1), x(2), dt, target);
+        [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory.arc_last, x(1), x(2), dt, target);
         V_out_flyby = flybyArc.V_end;
         dV_out = V_out_flyby - V_out_lambert;
         dv_out = norm(dV_out);
@@ -96,7 +96,7 @@ function [flybyArc, conicArc] = search_around_dt_seed(trajectory, r_multiple_p_f
     function dr_res = fun(x) % position residual
         dr_res = nan;
         try
-            [~, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, x(1), x(2), x(3), target);
+            [~, conicArc] = produceNextArcsFromFlybyGeometry(trajectory.arc_last, x(1), x(2), x(3), target);
         catch % in case of propagation failure or too low pass
             return;
         end
@@ -115,5 +115,5 @@ function [flybyArc, conicArc] = search_around_dt_seed(trajectory, r_multiple_p_f
     %     error('flybyTargeting_lambert failed to converge.');
     % end
 
-    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, x(1), x(2), x(3), target);
+    [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory.arc_last, x(1), x(2), x(3), target);
 end

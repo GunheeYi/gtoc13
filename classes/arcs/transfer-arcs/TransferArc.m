@@ -3,8 +3,10 @@ classdef (Abstract) TransferArc < Arc
         t_start {mustBeNonnegative};
         R_start (3,1) {mustBeReal};
         V_start (3,1) {mustBeReal};
-        t_end {mustBeNonnegative};
         target;
+    end
+    properties (Abstract)
+        t_end {mustBeNonnegative}
     end
     properties (Dependent)
         S_start (6,1) {mustBeReal};
@@ -20,29 +22,17 @@ classdef (Abstract) TransferArc < Arc
         dr_res (3,1) {mustBeReal};
     end
     methods
-        function transferArc = TransferArc(t_start, R_start, V_start, t_end, target)
+        function transferArc = TransferArc(t_start, R_start, V_start, target)
             arguments
                 t_start {mustBeNonnegative};
                 R_start (3,1) {mustBeReal};
                 V_start (3,1) {mustBeReal};
-                t_end {mustBeNonnegative};
                 target {mustBeA(target, 'CelestialBody')};
-            end
-
-            global t_max; %#ok<GVMIS>
-
-            if t_start >= t_end
-                error('Time must be increasing.');
-            end
-
-            if t_end > t_max
-                error('End time exceeds maximum allowed time.');
             end
 
             transferArc.t_start = t_start;
             transferArc.R_start = R_start;
             transferArc.V_start = V_start;
-            transferArc.t_end = t_end;
             transferArc.target = target;
         end
 

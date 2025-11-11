@@ -1,5 +1,4 @@
-function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, r_multiple_p_flyby, angle_flyby, dt, target)
-    arc_last = trajectory.arc_last;
+function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(arc_last, r_multiple_p_flyby, angle_rotation_flyby, dt, target)
     t_flyby = arc_last.t_end;
     body_flyby = arc_last.target;
     R_flyby = arc_last.R_end;
@@ -16,12 +15,12 @@ function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(trajectory, r_m
 
     r_p_flyby = r_multiple_p_flyby * body_flyby.r;
 
-    turn_angle = body_flyby.calc_turn_angle(vinf, r_p_flyby);
+    angle_turn = body_flyby.calc_angle_turn(vinf, r_p_flyby);
     Vinf_out_standard = vinf * ( ...
-        cos(turn_angle)*Vinf_in_normed + sin(turn_angle)*Vinf_in_perp_normed ...
+        cos(angle_turn)*Vinf_in_normed + sin(angle_turn)*Vinf_in_perp_normed ...
     );
 
-    Vinf_out = make_dcm_rodrigues(Vinf_in, angle_flyby) * Vinf_out_standard;
+    Vinf_out = make_dcm_rodrigues(Vinf_in, angle_rotation_flyby) * Vinf_out_standard;
 
     V_sc_flyby_out = V_body_flyby + Vinf_out;
 

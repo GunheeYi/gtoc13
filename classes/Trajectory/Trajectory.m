@@ -121,7 +121,7 @@ classdef Trajectory
         function trajectory = appendFinalFlybyIfPossible(trajectory)
             global celestialBody_placeholder; %#ok<GVMIS>
             if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
-                [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory, ...
+                [flybyArc, ~] = produceNextArcsFromFlybyGeometry(trajectory.arc_last, ...
                     2, 0, 1, celestialBody_placeholder);
                 trajectory = trajectory.addArc(flybyArc);
             end

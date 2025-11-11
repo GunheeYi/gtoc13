@@ -37,8 +37,9 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         );
     end
 
+    % `flybyArc`, `conicArc` are now used as seeds for further search
     fprintf('Trying with sails...\n');
-    propagatedArc = Trajectory_flybyTargeting_withSails(conicArc, allow_retrograde, allow_low_pass);
+    [flybyArc, propagatedArc] = Trajectory_flybyTargeting_withSails(arc_last, flybyArc, conicArc, allow_retrograde, allow_low_pass);
     fprintf('flybyTargeting(%s) produced dr_res = %.2fkm (%.2fAU) with sail.\n', ...
         target.name, propagatedArc.dr_res, propagatedArc.dr_res / AU);
     if propagatedArc.hitsTarget()
@@ -46,6 +47,12 @@ function trajectory = Trajectory_flybyTargeting(trajectory, target, dt_min, dt_m
         trajectory = trajectory.addArc(propagatedArc);
         return;
     end
+
+    % uncomment below to visualize the solution before solar sail optimization
+    trajectory_ = trajectory.addArc(flybyArc);
+    trajectory_ = trajectory_.addArc(propagatedArc);
+    trajectory_.draw(false);
+    trajectory_.draw_interactive();
 
     error('flybyTargeting(%s) did not converge even when using solar sail.', target.name);
 end

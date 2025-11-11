@@ -1,7 +1,7 @@
 classdef Control
     properties
-        dt {mustBeNonnegative}
-        dt_scaling_factor % to allow global scaling of dt during optimization
+        dt {mustBePositive}
+        dt_scaling_factor {mustBePositive} % to allow global scaling of dt during optimization
         alpha
         beta
     end

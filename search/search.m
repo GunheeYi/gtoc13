@@ -61,9 +61,6 @@ function search(filepath)
         dt_max_for_search = t_max_for_search - trajectory.t_end;
 
         T_sc = trajectory.arc_last.T_end;
-        if isinf(T_sc)
-            T_sc = 0;
-        end
         dt_max = min(max(T_sc, target.T), dt_max_for_search);
 
         try
