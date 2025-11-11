@@ -20,17 +20,18 @@ classdef PropagatedArc < TransferArc
             
             dt_full = conicArc.t_end - conicArc.t_start;
             n_controls = dt_full / 60;
-            n_controls = max(2, min(10, round(n_controls)));
+            n_controls = max(2, min(20, round(n_controls)));
             
-            ts = linspace(conicArc.t_start, conicArc.t_end, n_controls+1);
-            ts = ts(1:(end-1)) + dt_full / (n_controls * 2); % for curvature mimicry sampling
-            vs = arrayfun(@conicArc.v_at, ts);
-            % curvatures: not actual curvatures but a mimicry of them
-            % TODO: adjust exponent based on heuristics
-            curvatures = vs.^2;
-            recips_curvature = 1 ./ curvatures;
-            recips_curvature = recips_curvature ./ sum(recips_curvature); % normalize so that the sum becomes 1
-            dts_control = recips_curvature * dt_full;
+            % ts = linspace(conicArc.t_start, conicArc.t_end, n_controls+1);
+            % ts = ts(1:(end-1)) + dt_full / (n_controls * 2); % for curvature mimicry sampling
+            % vs = arrayfun(@conicArc.v_at, ts);
+            % % curvatures: not actual curvatures but a mimicry of them
+            % % TODO: adjust exponent based on heuristics
+            % curvatures = vs.^2;
+            % recips_curvature = 1 ./ curvatures;
+            % recips_curvature = recips_curvature ./ sum(recips_curvature); % normalize so that the sum becomes 1
+            % dts_control = recips_curvature * dt_full;
+            dts_control = repmat(dt_full/n_controls, 1, n_controls);
 
             propagatedArc.controls = createArray(1, n_controls, FillValue=Control(1,1,0,0));
             for i_control = 1:n_controls
@@ -51,6 +52,10 @@ classdef PropagatedArc < TransferArc
             for control = propagatedArc.controls
                 t_end = t_end + control.dt_scaling_factor * control.dt;
             end
+        end
+
+        function vector = exportLastControlsAsVector(propagatedArc, n_controls_last)
+            vector = PropagatedArc_exportLastControlsAsVector(propagatedArc, n_controls_last);
         end
 
         function propagatedArc = updateLastControlsFromVector(propagatedArc, vector)
