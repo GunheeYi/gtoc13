@@ -83,7 +83,7 @@ function [flybyArc_new, propagatedArc_new, flag] = refineLastControls(arc_last, 
         dr_res = nan;
 
         try
-            [~, propagatedArc_new] = produceNextArcs(flybyArc, propagatedArc, controlVector_ig, x);
+            [~, propagatedArc_new] = produceNextArcs(arc_last, flybyArc, propagatedArc, controlVector_ig, x);
             % ^ transferArc passes too low, etc.
         catch
             return;
@@ -136,7 +136,7 @@ function [flybyArc_new, propagatedArc_new, flag] = refineLastControls(arc_last, 
     [x, dr_res, flag] = fmincon(@fun, x_ig, [],[],[],[], lb, ub, [], options_fmincon);
     fprintf('Refined sail control produced dr_res = %.6fkm.\n', dr_res);
 
-    [flybyArc_new, propagatedArc_new] = produceNextArcs(flybyArc, propagatedArc, controlVector_ig, x);
+    [flybyArc_new, propagatedArc_new] = produceNextArcs(arc_last, flybyArc, propagatedArc, controlVector_ig, x);
 end
 
 function guarantee_ig_within_bounds(x_ig, lb, ub)
@@ -165,7 +165,7 @@ function guarantee_ig_within_bounds(x_ig, lb, ub)
     end
 end
 
-function [flybyArc_new, propagatedArc_new] = produceNextArcs(flybyArc, propagatedArc, controlVector_ig, x)
+function [flybyArc_new, propagatedArc_new] = produceNextArcs(arc_last, flybyArc, propagatedArc, controlVector_ig, x)
     controlVector = x(3:end);
     if flybyArc.body.flybyable
         r_multiple_p_flyby = x(1);
