@@ -1,7 +1,8 @@
-function search(filepath, depthFirst)
+function search(filepath, depthFirst, retryErrors)
     arguments
         filepath string;
         depthFirst logical;
+        retryErrors logical = false;
     end
 
     global year_in_secs ...
@@ -44,7 +45,7 @@ function search(filepath, depthFirst)
     nextFilepaths = []; % for BFS
     function searchOrAddToNextFilePaths(nextFilepath)
         if depthFirst % DFS
-            search(nextFilepath, depthFirst);
+            search(nextFilepath, depthFirst, retryErrors);
         else % BFS
             nextFilepaths = [nextFilepaths nextFilepath];
         end
@@ -66,9 +67,15 @@ function search(filepath, depthFirst)
                 rdvDirStr = "in";
             end
             dirpath_planet = sprintf("%s/%d-%s", dirpath, target.id, rdvDirStr);
-            filepath_planet_infeasible = sprintf("%s/infeasible", dirpath_planet);
             filepath_planet_feasible = sprintf("%s/trajectory.mat", dirpath_planet);
-            
+            filepath_planet_infeasible = sprintf("%s/infeasible", dirpath_planet);
+            filepath_planet_error = sprintf("%s/error", dirpath_planet);
+
+            if ~retryErrors && isfile(filepath_planet_error)
+                fprintf('Error occurred while previously attempting flyby to %s. Skipping...\n', target.name);
+                continue;
+                
+            end
             if isfile(filepath_planet_infeasible)
                 fprintf('Flyby to %s already deemed infeasible. Skipping...\n', target.name);
                 continue;
@@ -97,17 +104,21 @@ function search(filepath, depthFirst)
                 new_trajectory.save(filepath_planet_feasible_for_saving);
                 searchOrAddToNextFilePaths(filepath_planet_feasible);
             catch ME
+                if ~exist(dirpath_planet, 'dir')
+                    mkdir(dirpath_planet);
+                end
                 switch ME.identifier
                     case 'Trajectory:flybyTargeting:noConvergenceWithoutSails'
-                        fprintf('Flyby to %s infeasible. Marking and continuing...\n', ...
-                            target.name);
-                        if ~exist(dirpath_planet, 'dir')
-                            mkdir(dirpath_planet);
-                        end
                         fid = fopen(filepath_planet_infeasible, 'w');
                         fclose(fid);
+                        fprintf('Flyby to %s infeasible. Marking and continuing...\n', ...
+                            target.name);
                     otherwise
+                        fid = fopen(filepath_planet_error, 'w');
+                        fclose(fid);
                         logError(trajectory, target, ME, dirpath);
+                        fprintf('Error occurred while attempting flyby to %s. Marking and continuing...\n', ...
+                            target.name);
                         % rethrow(ME);
                 end
             end
@@ -117,7 +128,7 @@ function search(filepath, depthFirst)
     if ~depthFirst % BFS
         for i_nextFilePath = 1:length(nextFilepaths)
             nextFilePath = nextFilepaths(i_nextFilePath);
-            search(nextFilePath, depthFirst);
+            search(nextFilePath, depthFirst, retryErrors);
         end
     end
 end
