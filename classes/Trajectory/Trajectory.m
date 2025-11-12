@@ -123,6 +123,14 @@ classdef Trajectory
             trajectory = Trajectory_flybyTargeting(trajectory, target, rendezvousDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass);
         end
 
+        function nextTargets = getNextTargets(trajectory, pool)
+            arguments
+                trajectory Trajectory;
+                pool CelestialBody = Planet.empty(0, 1);
+            end
+            nextTargets = Trajectory_getNextTargets(trajectory, pool);
+        end
+
         function trajectory = appendFinalFlybyIfPossible(trajectory)
             if isa(trajectory.arc_last, 'TransferArc') && trajectory.arc_last.hitsTarget()
                 flybyArc = FlybyArc(trajectory.t_end, trajectory.arc_last.target, ...
