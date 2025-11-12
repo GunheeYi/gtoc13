@@ -4,6 +4,8 @@ function propagatedArc = PropagatedArc_updateLastControlsFromVector(propagatedAr
         vector (1,:) {mustBeReal};
     end
 
+    global t_max;
+
     n_vector = length(vector);
     if mod((n_vector-1), 2) ~= 0 % except `global_dt_scaling_factor` at the end
         error('Input vector length must be even (pairs of alpha, beta).');
@@ -24,5 +26,9 @@ function propagatedArc = PropagatedArc_updateLastControlsFromVector(propagatedAr
         control.alpha = vector(2*i-1); % first two values in vector are flyby geometries
         control.beta = vector(2*i);
         propagatedArc.controls(i_control) = control;
+    end
+
+    if propagatedArc.t_end > t_max
+        error('End time exceeds maximum allowed time.');
     end
 end
