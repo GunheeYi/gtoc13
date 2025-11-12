@@ -60,6 +60,7 @@ function trajectory = Trajectory_flybyTargeting(trajectory, ...
     % uncomment below to visualize the solution before solar sail optimization
     trajectory_ = trajectory.addArc(flybyArc);
     trajectory_ = trajectory_.addArc(propagatedArc);
+    trajectory_.exportAsSolution('temp-for-debug.txt');
     trajectory_.draw(false);
     trajectory_.draw_interactive();
 
