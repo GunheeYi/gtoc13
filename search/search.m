@@ -31,9 +31,10 @@ function search(filepath)
     dirpath = split(filepath, '/');
     dirpath = strjoin(dirpath(1:end-1), '/');
 
-    targets_flyby = [wakonyingo, jotunn, bespin, beyonce, hoth, eden, yavin, vulcan];
+    % targets_flyby = [wakonyingo, jotunn, bespin, beyonce, hoth, eden, yavin, vulcan];
     % targets_flyby = targets_flyby(randperm(length(targets_flyby))); % randomize order
-    for target = targets_flyby
+    pool = [vulcan, yavin, eden, hoth, beyonce, bespin, jotunn];
+    for target = trajectory.getNextTargets(pool)
         if trajectory.arc_last.target.id == target.id
             continue;
         end
