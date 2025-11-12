@@ -24,8 +24,8 @@ function [flybyArc, conicArc] = produceNextArcsFromFlybyGeometry(arc_last, r_mul
 
     V_sc_flyby_out = V_body_flyby + Vinf_out;
 
-    t_rendezvous = t_flyby + dt;
+    t_rdv = t_flyby + dt;
 
     flybyArc = FlybyArc(t_flyby, body_flyby, R_flyby, V_sc_flyby_in, V_sc_flyby_out);
-    conicArc = ConicArc(t_flyby, R_flyby, V_sc_flyby_out, t_rendezvous, target);
+    conicArc = ConicArc(t_flyby, R_flyby, V_sc_flyby_out, t_rdv, target);
 end

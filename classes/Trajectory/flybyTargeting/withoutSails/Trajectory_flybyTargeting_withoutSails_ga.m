@@ -1,7 +1,7 @@
 % Method using `ga` and `lsqnonlin` without sailing, by Jaewoo.
 % Refactored into the framework by Gunhee.
 function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, ...
-        target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
+        target, rdvDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
 
     global TU; %#ok<GVMIS>
 
@@ -16,7 +16,7 @@ function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajec
         catch % in case of propagation failure or too low pass
             return;
         end
-        if ~conicArc.satisfiesConditions(rendezvousDirection, allow_retrograde, allow_low_pass)
+        if ~conicArc.satisfiesConditions(rdvDirection, allow_retrograde, allow_low_pass)
             return;
         end
         dR_res = conicArc.dR_res;

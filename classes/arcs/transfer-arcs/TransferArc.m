@@ -78,7 +78,7 @@ classdef (Abstract) TransferArc < Arc
             d = dot(transferArc.R_end, transferArc.V_end);
             tf = (d > 0);
         end
-        function tf = satisfiesConditions(transferArc, rendezvousDirection, allow_retrograde, allow_low_pass)
+        function tf = satisfiesConditions(transferArc, rdvDirection, allow_retrograde, allow_low_pass)
             tf = false;
             if ~allow_low_pass && transferArc.passes_low()
                 return;
@@ -86,11 +86,11 @@ classdef (Abstract) TransferArc < Arc
             if ~allow_retrograde && ~transferArc.isProgradeAtEnd
                 return;
             end
-            if rendezvousDirection > 0 % outward
+            if rdvDirection > 0 % outward
                 if ~transferArc.isMovingOutwardAtEnd
                     return;
                 end
-            elseif rendezvousDirection < 0 % inward
+            elseif rdvDirection < 0 % inward
                 if transferArc.isMovingOutwardAtEnd
                     return;
                 end

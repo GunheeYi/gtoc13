@@ -1,20 +1,19 @@
 function [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails(trajectory, ...
-        target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
+        target, rdvDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
     body_current = trajectory.arc_last.target;
     if ~body_current.flybyable
         fprintf('Current body (%s) is not flybyable. Making continuing arcs without targeting.\n', body_current.name);
         [flybyArc, conicArc] = makeContinuingArcs(trajectory, ...
-            target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass);
+            target, rdvDirection, dt_min, dt_max, allow_retrograde, allow_low_pass);
         return;
     end
 
     [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_ga(trajectory, ...
-        target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass); % by Jaewoo
-    % [flybyArc, conicArc] = Trajectory_flybyTargeting_withoutSails_lambert(trajectory, target, dt_min, dt_max, allow_retrograde, allow_low_pass); % by Jinsung
+        target, rdvDirection, dt_min, dt_max, allow_retrograde, allow_low_pass);
 end
 
 function [flybyArc, conicArc] = makeContinuingArcs(trajectory, ...
-        target, rendezvousDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
+        target, rdvDirection, dt_min, dt_max, allow_retrograde, allow_low_pass)
     % Make continuing arcs that just passes through the last body,
     % without performing any flyby maneuver.
     % `conicArc` is set to minimize residual position error from target at the end.
@@ -40,7 +39,7 @@ function [flybyArc, conicArc] = makeContinuingArcs(trajectory, ...
         catch % in case of propagation failure or too low pass
             return;
         end
-        if ~conicArc.satisfiesConditions(rendezvousDirection, allow_retrograde, allow_low_pass)
+        if ~conicArc.satisfiesConditions(rdvDirection, allow_retrograde, allow_low_pass)
             return;
         end
         dr_res = conicArc.dr_res;

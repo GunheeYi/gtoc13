@@ -12,7 +12,7 @@ function trajectory = Trajectory_startByTargeting(trajectory, target, t_start, v
         error('startByTargeting can only be called on an empty trajectory.');
     end
 
-    t_rendezvous = 15 * year_in_secs;
+    t_rdv = 15 * year_in_secs;
     ry_start = 5 * AU;
     rz_start = -30 * AU;
     % note: When rx/rz_start are too small(about 1~2AU), 
@@ -23,7 +23,7 @@ function trajectory = Trajectory_startByTargeting(trajectory, target, t_start, v
     % TODO: initial guesses taylored for PlanetX;
     % change based on target?
 
-    x0 = [t_rendezvous ry_start rz_start];
+    x0 = [t_rdv ry_start rz_start];
     lb = [t_start+1 -200*AU -200*AU];
     ub = [t_max 200*AU 200*AU];
 
@@ -45,13 +45,13 @@ function trajectory = Trajectory_startByTargeting(trajectory, target, t_start, v
         error('Trajectory.startByTargeting optimization did not converge.');
     end
 
-    t_rendezvous = x(1);
+    t_rdv = x(1);
     ry_start = x(2);
     rz_start = x(3);
 
     R_sc_start = [ -200*AU; ry_start; rz_start ];
     V_sc_start = [ vx_start; 0; 0 ];
-    conicArc = ConicArc(t_start, R_sc_start, V_sc_start, t_rendezvous, target);
+    conicArc = ConicArc(t_start, R_sc_start, V_sc_start, t_rdv, target);
 
     trajectory = trajectory.addArc(conicArc);
 end

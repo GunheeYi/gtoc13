@@ -107,11 +107,11 @@ classdef Trajectory
             trajectory = Trajectory_startByTargeting(trajectory, target, t_start, vx_start);
         end
         
-        function trajectory = flybyTargeting(trajectory, target, rendezvousDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass)
+        function trajectory = flybyTargeting(trajectory, target, rdvDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass)
             arguments
                 trajectory Trajectory;
                 target CelestialBody;
-                rendezvousDirection; % -1: inward / 1: outward / 0: doesn't matter
+                rdvDirection; % -1: inward / 1: outward / 0: doesn't matter
                 dt_min {mustBeNonnegative};
                 dt_max {mustBeNonnegative};
                 % min/maximum time after flyby to rendezvous with target [s]
@@ -120,7 +120,7 @@ classdef Trajectory
                 allow_retrograde = false;
                 allow_low_pass logical = false; % under 0.05AU
             end
-            trajectory = Trajectory_flybyTargeting(trajectory, target, rendezvousDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass);
+            trajectory = Trajectory_flybyTargeting(trajectory, target, rdvDirection, dt_min, dt_max, use_sails, allow_retrograde, allow_low_pass);
         end
 
         function nextTargets = getNextTargets(trajectory, pool)
