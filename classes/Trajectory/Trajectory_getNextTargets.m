@@ -2,7 +2,7 @@ function nextTargets = Trajectory_getNextTargets(trajectory, pool)
     % this function returns an array of planets 
     % (if pool is empty, it is set to all planets except yandi)
     % that are in the pool, by an order of their exploration priority.
-    % Vulcan is always of least priority.
+    % Vulcan and current body of flyby is always of least priority.
     % Ones that hasn't been exlored (flyby-ed) lead in priority than those that are already explored.
     % Among same explored / not yet explored planets, those that are closer 
     % (in their natural ring-order) to the current planet of flyby
@@ -58,11 +58,6 @@ function nextTargets = Trajectory_getNextTargets(trajectory, pool)
     pool = pool(~vulcanMask);
     poolIds = poolIds(~vulcanMask);
 
-    if isempty(pool)
-        nextTargets = [pool; vulcanSelection];
-        return;
-    end
-
     flybyArcs = trajectory.flybyArcs;
     if isempty(flybyArcs)
         flybyIds = [];
@@ -73,12 +68,17 @@ function nextTargets = Trajectory_getNextTargets(trajectory, pool)
     currentPlanet = arc_last.target;
     currentId = currentPlanet.id;
 
-    exploredFlags = ismember(poolIds, flybyIds)
-    ringDistances = abs(poolIds - currentId)
+    currentMask = (poolIds == currentId);
+    currentSelection = pool(currentMask);
+    pool = pool(~currentMask);
+    poolIds = poolIds(~currentMask);
+
+    exploredFlags = ismember(poolIds, flybyIds);
+    ringDistances = abs(poolIds - currentId);
 
     priorityMatrix = [double(exploredFlags(:)) ringDistances(:) poolIds(:)];
     [~, order] = sortrows(priorityMatrix, [1 2 3]);
     pool = pool(order);
 
-    nextTargets = [pool; vulcanSelection];
+    nextTargets = [pool; vulcanSelection; currentSelection];
 end

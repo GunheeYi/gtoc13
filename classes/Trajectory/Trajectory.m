@@ -14,7 +14,6 @@ classdef Trajectory
         flybyArcs;
         n_flybys;
         n_flybys_possible; % `n_flyby` + (last conic arc converges to target) ? 1 : 0 
-        sequenceString; % e.g., "PlanetX-Rogue 1-Jotunn"
         score;
     end
     methods
@@ -81,17 +80,31 @@ classdef Trajectory
             end
         end
 
-        function sequenceString = get.sequenceString(trajectory)
+        function sequenceString = generateSequenceString(trajectory, useNames)
+            arguments
+                trajectory Trajectory;
+                useNames logical = false; % if false, use IDs
+            end
             trajectory = trajectory.appendFinalFlybyIfPossible();
             sequenceString = '';
             for i_flybyArc = 1:trajectory.n_flybys
                 flybyArc = trajectory.flybyArcs(i_flybyArc);
-                name = flybyArc.body.name;
-                if isempty(sequenceString)
-                    sequenceString = sprintf('%s', name);
+                if useNames
+                    name = flybyArc.body.name;
+                    if isempty(sequenceString)
+                        sequenceString = sprintf('%s', name);
+                    else
+                        sequenceString = sprintf('%s-%s', sequenceString, name);
+                    end
                 else
-                    sequenceString = sprintf('%s-%s', sequenceString, name);
+                    id = flybyArc.body.id;
+                    if isempty(sequenceString)
+                        sequenceString = sprintf('%d', id);
+                    else
+                        sequenceString = sprintf('%s-%d', sequenceString, id);
+                    end
                 end
+                
             end
         end
 

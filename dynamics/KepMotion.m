@@ -1,9 +1,13 @@
 % from Mercury
 function KOE = KepMotion(KOE0,dt,mu)
     arguments
-        KOE0 (:,1) {mustBeReal, mustBeNumeric}
+        KOE0
         dt (1,:) {mustBeReal, mustBeNumeric}
         mu
+    end
+    
+    if ~isreal(KOE0)
+        error('KepMotion:KOE0NotReal', 'KOE0 must be real-valued.') ;
     end
 
     KOE = repmat(KOE0,[1 length(dt)]) ;

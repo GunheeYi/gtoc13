@@ -28,10 +28,10 @@ function trajectory = Trajectory_flybyTargeting(trajectory, ...
 
     if ~use_sails
         % uncomment below to visualize the solution before solar sail optimization
-        trajectory_ = trajectory.addArc(flybyArc);
-        trajectory_ = trajectory_.addArc(conicArc);
-        trajectory_.draw();
-        trajectory_.draw_interactive();
+        % trajectory_ = trajectory.addArc(flybyArc);
+        % trajectory_ = trajectory_.addArc(conicArc);
+        % trajectory_.draw();
+        % trajectory_.draw_interactive();
         error( ...
             'Trajectory:flybyTargeting:noConvergenceWithoutSails', ...
             'flybyTargeting(%s) did not converge. Try setting use_sail = true.', ...

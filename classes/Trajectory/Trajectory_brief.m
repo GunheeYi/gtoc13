@@ -16,7 +16,7 @@ function Trajectory_brief(trajectory)
 
     fprintf('score = %.2f\n', trajectory.score);
 
-    sequenceString = char(trajectory.sequenceString);
+    sequenceString = char(trajectory.generateSequenceString());
     if isempty(sequenceString)
         sequenceString = '(none)';
     end

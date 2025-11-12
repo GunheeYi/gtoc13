@@ -70,12 +70,28 @@ classdef ConicArc < TransferArc
 
         function tf = passes_too_low(conicArc)
             global AU; %#ok<GVMIS>
-            tf = (conicArc.r_min < 0.01 * AU);
+            try
+                tf = (conicArc.r_min < 0.01 * AU);
+            catch ME
+                if strcmp(ME.identifier, 'KepMotion:KOE0NotReal')
+                    tf = true; % TODO:think: Better way? What is the root cause of this error?
+                else
+                    rethrow(ME);
+                end
+            end
         end
 
         function tf = passes_low(conicArc)
             global AU; %#ok<GVMIS>
-            tf = (conicArc.r_min < 0.05 * AU);
+            try
+                tf = (conicArc.r_min < 0.05 * AU);
+            catch ME
+                if strcmp(ME.identifier, 'KepMotion:KOE0NotReal')
+                    tf = true; % TODO:think: Better way? What is the root cause of this error?
+                else
+                    rethrow(ME);
+                end
+            end
         end
 
         % draw
