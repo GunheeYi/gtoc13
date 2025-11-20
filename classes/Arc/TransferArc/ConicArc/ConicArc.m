@@ -9,6 +9,7 @@ classdef ConicArc < TransferArc
         t_end;
     end
     properties (Dependent)
+        T % orbital period
         r_min % closest approach distance to Altaira
     end
 
@@ -64,6 +65,17 @@ classdef ConicArc < TransferArc
             v = norm(V);
         end
 
+        function T = get.T(conicArc)
+            global mu_altaira; %#ok<GVMIS>
+            a = conicArc.K_start(1);
+            e = conicArc.K_start(2);
+            if e < 1
+                T = 2*pi*sqrt(a^3/mu_altaira);
+            else
+                T = Inf;
+            end
+        end
+
         function r_min = get.r_min(conicArc)
             r_min = ConicArc_get_r_min(conicArc);
         end
@@ -92,6 +104,18 @@ classdef ConicArc < TransferArc
                     rethrow(ME);
                 end
             end
+        end
+
+        function closeApproach = getCloseApproachTo(conicArc, body)
+            arguments
+                conicArc ConicArc;
+                body;
+            end
+            closeApproach = ConicArc_getCloseApproachTo(conicArc, body);
+        end
+
+        function closeApproaches = getCloseApproaches(conicArc, pool)
+            closeApproaches = ConicArc_getCloseApproaches(conicArc, pool);
         end
 
         % draw

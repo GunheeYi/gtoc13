@@ -9,6 +9,7 @@ classdef (Abstract) CelestialBody
     properties (Dependent)
         name;
         T; % orbital period
+        isPrograde
     end
 
     methods
@@ -32,6 +33,11 @@ classdef (Abstract) CelestialBody
 
             a = celestialBody.K0(1);
             T = 2*pi*sqrt(a^3/mu_altaira);
+        end
+
+        function tf = get.isPrograde(celestialBody)
+            i = celestialBody.K0(3);
+            tf = (i < 90); % TODO:think: does this work properly for hyperbolic orbits?
         end
 
         function K = K_at(celestialBody, t)
